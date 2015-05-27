@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"reflect"
@@ -43,8 +44,16 @@ func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			if mmethod.json {
 				returnValues := mmethod.method.Func.Call([]reflect.Value{this.rcvr, reflect.ValueOf(ResponseWriter{w}), reflect.ValueOf(Request{r})})
 				content := returnValues[0].Interface()
+				fmt.Println(content)
 				if content != nil {
-					w.WriteHeader(500)
+					data, err := json.MarshalIndent(content, "", "  ")
+					if err != nil {
+						w.WriteHeader(500)
+						w.Write(data)
+						return
+					} else {
+						w.Write(data)
+					}
 				}
 			} else {
 				mmethod.method.Func.Call([]reflect.Value{this.rcvr, reflect.ValueOf(ResponseWriter{w}), reflect.ValueOf(Request{r})})
@@ -54,8 +63,8 @@ func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 /*
-	func (this *Hello) JsonHello(r *http.Request) {}
-	func (this *Hello) Hello(w http.ResponseWriter, r *http.Request) {}
+	func (this *Hello) JsonHello(r server.Request) {}
+	func (this *Hello) Hello(w server.ResponseWriter, r server.Request) {}
 */
 func (this *Server) Register(rcvr interface{}) error {
 	this.typ = reflect.TypeOf(rcvr)

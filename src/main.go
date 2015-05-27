@@ -5,26 +5,27 @@ import (
 	"server"
 )
 
-type Hello struct {
+type Web struct {
 }
 
-func (this *Hello) Print(w server.ResponseWriter, r server.Request) map[string]interface{} {
+func (this *Web) Print(w server.ResponseWriter, r server.Request) {
 	w.ResponseWriter.Write([]byte("print"))
-	return nil
 }
 
-func (this *Hello) Hello(w server.ResponseWriter, r server.Request) {
-	w.ResponseWriter.Write([]byte("hellp"))
+func (this *Web) Hello(w server.ResponseWriter, r server.Request) {
+	w.ResponseWriter.Write([]byte("hello"))
 }
 
-func (this *Hello) JsonHello(r server.Request) {
-
+func (this *Web) JsonHello(r server.Request) map[string]interface{} {
+	m := make(map[string]interface{})
+	m["baidu"] = "www.baidu.com"
+	return m
 }
 
 func main() {
 
 	s := server.NewServer()
-	fmt.Println(s.Register(new(Hello)))
+	fmt.Println(s.Register(new(Web)))
 	s.Start(":8080")
 
 }
