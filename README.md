@@ -1,5 +1,5 @@
 ----------------
-jsonhttp
+freehttp
 
 一个快速将类和子方法转换成HTTP接口
 
