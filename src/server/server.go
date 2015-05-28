@@ -13,19 +13,9 @@ type ResponseWriter struct {
 	ResponseWriter http.ResponseWriter
 }
 
-// 这里可以实现很多帮助方法 (ResponseWriter)
-func (this *ResponseWriter) Help() {
-
-}
-
 // 包装 *http.Request
 type Request struct {
 	Request *http.Request
-}
-
-// 这里可以实现很多帮助方法 (Request)
-func (this *Request) Help() {
-
 }
 
 // Server Json HTTP
@@ -70,14 +60,8 @@ func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				if content := returnValues[0].Interface(); content != nil {
 					reType := method.Type.Out(0).String()
 					switch reType {
-					case "map[string]interface {}":
-						data, err := json.MarshalIndent(content, "", "  ")
-						if err != nil {
-							w.WriteHeader(500)
-							w.Write(data)
-						} else {
-							w.Write(data)
-						}
+					case "error":
+						fmt.Println(content.(error).Error())
 					default:
 						fmt.Printf("unsupported return type: %s\n", reType)
 					}
@@ -118,4 +102,22 @@ func (this *Server) Register(rcvr interface{}) error {
 		this.methods[mname] = method
 	}
 	return nil
+}
+
+// 将 map[string]interface{} 转 Json 并排版回写
+func (this *ResponseWriter) WriterJsonIndent(content map[string]interface{}) (int, error) {
+	data, err := json.MarshalIndent(content, "", "  ")
+	if err != nil {
+		return 0, err
+	}
+	return this.ResponseWriter.Write(data)
+}
+
+// 将 map[string]interface{} 转 Json 回写 (一行一数据)
+func (this *ResponseWriter) WriterJsonLine(content map[string]interface{}) (int, error) {
+	data, err := json.Marshal(content)
+	if err != nil {
+		return 0, err
+	}
+	return this.ResponseWriter.Write(append(data, '\n'))
 }

@@ -20,10 +20,10 @@ func (this *Web) Ifconfig(r server.Request) {
 
 }
 
-func (this *Web) Json() map[string]interface{} {
+func (this *Web) Json(w server.ResponseWriter) {
 	m := make(map[string]interface{})
 	m["baidu"] = "www.baidu.com"
-	return m
+	w.WriterJsonLine(m)
 }
 
 func main() {

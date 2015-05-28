@@ -19,10 +19,9 @@ jsonhttp
 	// 使用任意也可以比如 func MyFunca(w server.ResponseWriter) {}
 	// 使用任意也可以比如 func MyFunca(r server.Request) {}
 
-	// Json 设计, 当函数返回值为 map[string]interface{} 时
-	// 自动将 map[string]interface{} 转换成 json 并回写
-	func (this *MyStruct) MyFunc() map[string]interface{} {}
-	...
+	// Json 设计
+	Request // 内绑定了很多读取的帮助方法
+	ResponseWriter // 内绑定了很多写入的帮助方法
 
 ----------------
 
@@ -50,15 +49,17 @@ jsonhttp
 	}
 
 	// ...
-	func (this *Web) Ifconfig(r server.Request) {
-		// ...
+	func (this *Web) Ifconfig(r server.Request) error {
+		// 这里只是简单的设计，返回一个错误时，会打印日志
+		return fmt.Errorf("error")
 	}
 
-	// 如果返回类型为 map[string]interface{} 则自定转换成Json返回
-	func (this *Web) Json() map[string]interface{} {
+	// ResponseWriter 内捆绑着很多帮助方法，比如发送JSON
+	func (this *Web) Json(w server.ResponseWriter) {
 		m := make(map[string]interface{})
 		m["baidu"] = "www.baidu.com"
-		return m
+		w.WriterJsonLine(m)
+		w.WriterJsonIndent(m)
 	}
 
 	// 主要
