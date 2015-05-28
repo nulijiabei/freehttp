@@ -8,62 +8,85 @@ import (
 	"strings"
 )
 
+// 包装 http.ResponseWriter
 type ResponseWriter struct {
 	ResponseWriter http.ResponseWriter
+	// 这里可以实现很多帮助方法 (ResponseWriter)
 }
 
+// 包装 *http.Request
 type Request struct {
 	Request *http.Request
+	// 这里可以实现很多帮助方法 (Request)
 }
 
+// Server Json HTTP
+// http://127.0.0.1:8080/MyStructName.MyFuncName
 type Server struct {
 	name    string
 	rcvr    reflect.Value
 	typ     reflect.Type
-	methods map[string]*Method
+	methods map[string]reflect.Method
 }
 
-type Method struct {
-	method reflect.Method
-	json   bool
-}
-
+// 创建 Server
 func NewServer() *Server {
 	server := new(Server)
-	server.methods = make(map[string]*Method)
+	server.methods = make(map[string]reflect.Method)
 	return server
 }
 
+// 启动服务
 func (this *Server) Start(port string) error {
 	return http.ListenAndServe(port, this)
 }
 
+// 内部方法 http 需要
 func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	for mname, mmethod := range this.methods {
-		if strings.ToLower("/"+this.name+"."+mname) == r.URL.Path {
-			if mmethod.json {
-				returnValues := mmethod.method.Func.Call([]reflect.Value{this.rcvr, reflect.ValueOf(ResponseWriter{w}), reflect.ValueOf(Request{r})})
-				content := returnValues[0].Interface()
-				fmt.Println(content)
-				if content != nil {
-					data, err := json.MarshalIndent(content, "", "  ")
-					if err != nil {
-						w.WriteHeader(500)
-						w.Write(data)
-						return
-					} else {
-						w.Write(data)
-					}
+	status := false
+	for name, method := range this.methods {
+		if strings.ToLower(fmt.Sprintf("/%s.%s", this.name, name)) == strings.ToLower(r.URL.Path) {
+			status = true
+			value := make([]reflect.Value, method.Type.NumIn())
+			value[0] = this.rcvr
+			for n := 1; n < method.Type.NumIn(); n++ {
+				switch method.Type.In(n).String() {
+				case "server.Request":
+					value[n] = reflect.ValueOf(Request{r})
+				case "server.ResponseWriter":
+					value[n] = reflect.ValueOf(ResponseWriter{w})
 				}
-			} else {
-				mmethod.method.Func.Call([]reflect.Value{this.rcvr, reflect.ValueOf(ResponseWriter{w}), reflect.ValueOf(Request{r})})
+			}
+			returnValues := method.Func.Call(value)
+			if method.Type.NumOut() == 1 {
+				content := returnValues[0].Interface()
+				reType := method.Type.Out(0).String()
+				switch reType {
+				case "map[string]interface {}":
+					if content != nil {
+						data, err := json.MarshalIndent(content, "", "  ")
+						if err != nil {
+							w.WriteHeader(500)
+							w.Write(data)
+						} else {
+							w.Write(data)
+						}
+					}
+				default:
+					fmt.Printf("unsupported return type: %s\n", reType)
+				}
 			}
 		}
+	}
+	if !status {
+		http.NotFound(w, r)
 	}
 }
 
 /*
-	func (this *Hello) JsonHello(r server.Request) {}
+	// 一个以Json开头的命令的函数, 返回的map[string]interface{}自动被处理成Json发送
+	func (this *Hello) JsonHello(r server.Request) map[string]interface{} {}
+	// 非以Json开头的命令的函数, 则默认为HTTP函数
 	func (this *Hello) Hello(w server.ResponseWriter, r server.Request) {}
 */
 func (this *Server) Register(rcvr interface{}) error {
@@ -77,29 +100,15 @@ func (this *Server) Register(rcvr interface{}) error {
 		method := this.typ.Method(m)
 		mtype := method.Type
 		mname := method.Name
-		if strings.HasPrefix(mname, "Json") {
-			if mtype.NumIn() != 2 {
-				return fmt.Errorf("method %s has wrong number of ins: %d", mname, mtype.NumIn())
+		for n := 1; n < mtype.NumIn(); n++ {
+			switch mtype.In(n).String() {
+			case "server.Request":
+			case "server.ResponseWriter":
+			default:
+				return fmt.Errorf("%s argument type not exported: Request or ResponseWriter", mname)
 			}
-			arg := mtype.In(1)
-			if arg.String() != "server.Request" {
-				return fmt.Errorf("%s argument type not exported: %s", mname, arg)
-			}
-			this.methods[mname] = &Method{method, true}
-		} else {
-			if mtype.NumIn() != 3 {
-				return fmt.Errorf("method %s has wrong number of ins: %d", mname, mtype.NumIn())
-			}
-			reply := mtype.In(1)
-			if reply.String() != "server.ResponseWriter" {
-				return fmt.Errorf("%s argument type not exported: %s", mname, reply)
-			}
-			arg := mtype.In(2)
-			if arg.String() != "server.Request" {
-				return fmt.Errorf("%s argument type not exported: %s", mname, arg)
-			}
-			this.methods[mname] = &Method{method, false}
 		}
+		this.methods[mname] = method
 	}
 	return nil
 }
