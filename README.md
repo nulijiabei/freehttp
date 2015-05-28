@@ -5,23 +5,64 @@ freehttp
 
 主要是对net/http的一个反射封装，便于使用
 
-	server.ResponseWriter = http.ResponseWriter + 帮助方法
-	// 也就是 server.ResponseWriter.ResponseWriter = http.ResponseWriter
-	// 也就是 server.ResponseWriter.* = 帮助方法
+	核心：
+		
+		server.Request        封装于  http.Request
+		server.ResponseWriter 封装于  http.ResponseWriter
 
-	server.Request = http.Request + 帮助方法
-	// 也就是 server.Request.Request = *http.Request
-	// 也就是 server.Request.* = 帮助方法
-
-	// 子方法名任意但是要首字母大写，Go权限设计
-	// 任意使用 server.ResponseWriter 或 server.Request 
-	// 当然，也可以不使用，直接 func MyFunc() {} 即可
-	// 使用任意也可以比如 func MyFunca(w server.ResponseWriter) {}
-	// 使用任意也可以比如 func MyFunca(r server.Request) {}
-
-	// Json 设计
-	Request // 内绑定了很多读取的帮助方法
-	ResponseWriter // 内绑定了很多写入的帮助方法
+	衍生帮助方法:
+	
+		server.Request.*         基于对 http.Request        的自定义帮助方法
+		server.ResponseWriter.*  基于对 http.ResponseWriter 的自定义帮助方法
+		
+	继承动态输出类型
+	
+		// 错误类型
+		error
+		
+		例如: func (this *MyStruct) MyFunc(...) error
+		
+		介绍: 返回 error 会作为日志输出
+	
+	衍生动态输出类型:
+	
+		// Json 普通格式
+		Json 原型 map[string]interface{}
+		
+		// Json 排版格式
+		JsonIndent 原型 map[string]interface{}
+	
+		例如: func (this *MyStruct) MyFunc() server.Json {}
+		
+		例如: func (this *MyStruct) MyFunc() server.JsonIndent {}
+		
+		介绍：返回类型为 server.Json 或 server.JsonIndent 数据会以 Json 方法回写
+			
+	继承动态输入类型:
+	
+		// 包装 http.ResponseWriter
+		type ResponseWriter struct { ResponseWriter http.ResponseWriter }
+		
+		// 包装 *http.Request
+		type Request struct { Request *http.Request }
+	
+		例如: func (this *MyStruct) MyFunc(w server.ResponseWriter, r server.Request) {}
+		
+		介绍: 输入类型为 server.ResponseWriter 或 server.Request 
+		
+		则: 可以使用 *http.Request 和 http.ResponseWriter 集继承与自定义方法
+			
+	衍生动态输入类型:
+	
+		// Body
+		Body 原型 []byte
+		
+		// Json Body
+		BodyJson 原型 map[string]interface{}
+		
+		例如: func (this *MyStruct) MyFunc(body server.Body, bodyJson server.BodyJson) {}
+		
+		介绍: 输入类型为 server.Body 或 server.BodyJson 时，自动传入 Body 全部数据 或 转为Json传入
 
 ----------------
 
@@ -36,30 +77,24 @@ freehttp
 	type Web struct {
 	}
 
-	// 给类随便定义一个方法，可以任意使用 server.ResponseWriter 或 server.Request 数据
-	func (this *Web) Print(w server.ResponseWriter, r server.Request) {
-		// 回写了一个数据
+	// 任意传入了 server.ResponseWriter 和 server.Request
+	func (this *Web) ReadWrite(w server.ResponseWriter, r server.Request) {
+		// r.Request.PostForm
 		w.ResponseWriter.Write([]byte("print"))
 	}
-
-	// ...
-	func (this *Web) Hello(w server.ResponseWriter, r server.Request) {
-		// ...
-		w.ResponseWriter.Write([]byte("hello"))
-	}
-
-	// ...
-	func (this *Web) Ifconfig(r server.Request) error {
-		// 这里只是简单的设计，返回一个错误时，会打印日志
-		return fmt.Errorf("error")
-	}
-
-	// ResponseWriter 内捆绑着很多帮助方法，比如发送JSON
-	func (this *Web) Json(w server.ResponseWriter) {
+	
+	// 返回了一个 server.Json
+	func (this *Web) WriteJson() server.Json {
 		m := make(map[string]interface{})
 		m["baidu"] = "www.baidu.com"
-		w.WriterJsonLine(m)
-		w.WriterJsonIndent(m)
+		return m
+	}
+	
+	// 任意传入了 server.Body 和 server.BodyJson 返回了 error
+	func (this *Web) Hello(body server.Body, bodyJson server.BodyJson) error {
+		fmt.Println(body)
+		fmt.Println(bodyJson)
+		return fmt.Errorf("...")
 	}
 
 	// 主要

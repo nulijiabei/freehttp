@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"reflect"
 	"strings"
@@ -18,6 +19,18 @@ type Request struct {
 	Request *http.Request
 }
 
+// Json 普通格式
+type Json map[string]interface{}
+
+// Json 排版格式
+type JsonIndent map[string]interface{}
+
+// Body
+type Body []byte
+
+// Json Body
+type BodyJson map[string]interface{}
+
 // Server Json HTTP
 // http://127.0.0.1:8080/MyStructName.MyFuncName
 type Server struct {
@@ -32,6 +45,13 @@ func NewServer() *Server {
 	server := new(Server)
 	server.methods = make(map[string]reflect.Method)
 	return server
+}
+
+// 错误输出
+func (this *Server) Error(err error) {
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 }
 
 // 启动服务
@@ -53,6 +73,10 @@ func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					value[n] = reflect.ValueOf(Request{r})
 				case "server.ResponseWriter":
 					value[n] = reflect.ValueOf(ResponseWriter{w})
+				case "server.Body":
+					value[n] = reflect.ValueOf(this.ReadAllBody(r))
+				case "server.BodyJson":
+					value[n] = reflect.ValueOf(this.ReadAllBodyJson(r))
 				}
 			}
 			returnValues := method.Func.Call(value)
@@ -60,10 +84,14 @@ func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				if content := returnValues[0].Interface(); content != nil {
 					reType := method.Type.Out(0).String()
 					switch reType {
+					case "server.Json":
+						this.Error(this.WriterJson(w, content))
+					case "server.JsonIndent":
+						this.Error(this.WriterJsonIndent(w, content))
 					case "error":
-						fmt.Println(content.(error).Error())
+						this.Error(content.(error))
 					default:
-						fmt.Printf("unsupported return type: %s\n", reType)
+						this.Error(fmt.Errorf("unsupported return type: %s\n", reType))
 					}
 				}
 			}
@@ -89,35 +117,51 @@ func (this *Server) Register(rcvr interface{}) error {
 	}
 	for m := 0; m < this.typ.NumMethod(); m++ {
 		method := this.typ.Method(m)
-		mtype := method.Type
+		// mtype := method.Type
 		mname := method.Name
-		for n := 1; n < mtype.NumIn(); n++ {
-			switch mtype.In(n).String() {
-			case "server.Request":
-			case "server.ResponseWriter":
-			default:
-				return fmt.Errorf("%s argument type not exported: Request or ResponseWriter", mname)
-			}
-		}
 		this.methods[mname] = method
 	}
 	return nil
 }
 
-// 将 map[string]interface{} 转 Json 并排版回写
-func (this *ResponseWriter) WriterJsonIndent(content map[string]interface{}) (int, error) {
-	data, err := json.MarshalIndent(content, "", "  ")
+// 将 map[string]interface{} 转 Json 并回写
+func (this *Server) WriterJson(w http.ResponseWriter, content interface{}) error {
+	data, err := json.Marshal(content.(Json))
 	if err != nil {
-		return 0, err
+		return err
 	}
-	return this.ResponseWriter.Write(data)
+	_, err = w.Write(data)
+	return err
 }
 
-// 将 map[string]interface{} 转 Json 回写 (一行一数据)
-func (this *ResponseWriter) WriterJsonLine(content map[string]interface{}) (int, error) {
-	data, err := json.Marshal(content)
+// 将 map[string]interface{} 转 Json 并回写
+func (this *Server) WriterJsonIndent(w http.ResponseWriter, content interface{}) error {
+	data, err := json.MarshalIndent(content.(JsonIndent), "", "  ")
 	if err != nil {
-		return 0, err
+		return err
 	}
-	return this.ResponseWriter.Write(append(data, '\n'))
+	_, err = w.Write(data)
+	return err
+}
+
+// 读取全部 Body 数据
+func (this *Server) ReadAllBody(r *http.Request) []byte {
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return nil
+	}
+	return data
+}
+
+// 读取全部 Body 数据转为 Json
+func (this *Server) ReadAllBodyJson(r *http.Request) map[string]interface{} {
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return nil
+	}
+	var content interface{}
+	if err := json.Unmarshal(data, &content); err != nil {
+		return nil
+	}
+	return content.(map[string]interface{})
 }

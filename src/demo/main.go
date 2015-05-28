@@ -8,22 +8,21 @@ import (
 type Web struct {
 }
 
-func (this *Web) Print(w server.ResponseWriter, r server.Request) {
+func (this *Web) ReadWrite(w server.ResponseWriter, r server.Request) {
+	// r.Request.PostForm
 	w.ResponseWriter.Write([]byte("print"))
 }
 
-func (this *Web) Hello(w server.ResponseWriter, r server.Request) {
-	w.ResponseWriter.Write([]byte("hello"))
-}
-
-func (this *Web) Ifconfig(r server.Request) {
-
-}
-
-func (this *Web) Json(w server.ResponseWriter) {
+func (this *Web) WriteJson() server.Json {
 	m := make(map[string]interface{})
 	m["baidu"] = "www.baidu.com"
-	w.WriterJsonLine(m)
+	return m
+}
+
+func (this *Web) Hello(body server.Body, bodyJson server.BodyJson) error {
+	fmt.Println(body)
+	fmt.Println(bodyJson)
+	return fmt.Errorf("...")
 }
 
 func main() {
