@@ -11,13 +11,21 @@ import (
 // 包装 http.ResponseWriter
 type ResponseWriter struct {
 	ResponseWriter http.ResponseWriter
-	// 这里可以实现很多帮助方法 (ResponseWriter)
+}
+
+// 这里可以实现很多帮助方法 (ResponseWriter)
+func (this *ResponseWriter) Help() {
+
 }
 
 // 包装 *http.Request
 type Request struct {
 	Request *http.Request
-	// 这里可以实现很多帮助方法 (Request)
+}
+
+// 这里可以实现很多帮助方法 (Request)
+func (this *Request) Help() {
+
 }
 
 // Server Json HTTP
