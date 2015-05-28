@@ -59,11 +59,10 @@ func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			}
 			returnValues := method.Func.Call(value)
 			if method.Type.NumOut() == 1 {
-				content := returnValues[0].Interface()
-				reType := method.Type.Out(0).String()
-				switch reType {
-				case "map[string]interface {}":
-					if content != nil {
+				if content := returnValues[0].Interface(); content != nil {
+					reType := method.Type.Out(0).String()
+					switch reType {
+					case "map[string]interface {}":
 						data, err := json.MarshalIndent(content, "", "  ")
 						if err != nil {
 							w.WriteHeader(500)
@@ -71,9 +70,9 @@ func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						} else {
 							w.Write(data)
 						}
+					default:
+						fmt.Printf("unsupported return type: %s\n", reType)
 					}
-				default:
-					fmt.Printf("unsupported return type: %s\n", reType)
 				}
 			}
 		}
