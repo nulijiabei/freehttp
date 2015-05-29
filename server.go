@@ -38,8 +38,8 @@ func (this *Server) Start(port string) error {
 // 内部方法 http 需要
 func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	status := false
-	request := &Request{r}
-	responseWriter := &ResponseWriter{w}
+	request := NewRequest(r)
+	responseWriter := NewResponseWriter(w)
 	for name, method := range this.methods {
 		if strings.ToLower(fmt.Sprintf("/%s.%s", this.name, name)) == strings.ToLower(r.URL.Path) {
 			status = true
@@ -53,27 +53,38 @@ func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				case "*freehttp.ResponseWriter":
 					value[n] = reflect.ValueOf(responseWriter)
 				case "freehttp.Body":
-					value[n] = reflect.ValueOf(request.ReadAllBody())
+					value[n] = reflect.ValueOf(request.ReadBody())
 				case "freehttp.BodyJson":
-					value[n] = reflect.ValueOf(request.ReadAllBodyJson())
+					value[n] = reflect.ValueOf(request.ReadBodyJson())
+				case "freehttp.BufioStream":
+					value[n] = reflect.ValueOf(request.ReadBufioStream())
 				default:
-					this.Error(fmt.Errorf("unsupported in type: %s\n", inType))
+					this.Error(fmt.Errorf("unsupported in type: %s", inType))
 				}
 			}
 			returnValues := method.Func.Call(value)
 			for t := 0; t < method.Type.NumOut(); t++ {
 				reType := method.Type.Out(t).String()
+				content := returnValues[t].Interface()
+				if content == nil {
+					this.Error(fmt.Errorf("%s out value is null -> %s", name, reType))
+					continue
+				}
 				switch reType {
-				case "freehttp.Status":
-					responseWriter.WriteHeader(returnValues[t].Interface().(int))
+				case "freehttp.HttpStatus":
+					responseWriter.WriteHeader(content)
+				case "freehttp.ContentType":
+					responseWriter.SetContentType(content)
 				case "freehttp.Json":
-					this.Error(responseWriter.WriterJson(returnValues[t].Interface()))
+					this.Error(responseWriter.WriterJson(content))
 				case "freehttp.JsonIndent":
-					this.Error(responseWriter.WriterJsonIndent(returnValues[t].Interface()))
+					this.Error(responseWriter.WriterJsonIndent(content))
+				case "freehttp.BufioStream":
+					this.Error(responseWriter.WriterBufioStream(content))
 				case "error":
-					this.Error(returnValues[t].Interface().(error))
+					this.Error(content.(error))
 				default:
-					this.Error(fmt.Errorf("unsupported out type: %s\n", reType))
+					this.Error(fmt.Errorf("unsupported out type: %s", reType))
 				}
 			}
 		}
@@ -89,7 +100,7 @@ func (this *Server) Register(rcvr interface{}) error {
 	this.rcvr = reflect.ValueOf(rcvr)
 	this.name = reflect.Indirect(this.rcvr).Type().Name()
 	if this.name == "" {
-		return fmt.Errorf("no service name for type ", this.typ.String())
+		return fmt.Errorf("no service name for type %s", this.typ.String())
 	}
 	for m := 0; m < this.typ.NumMethod(); m++ {
 		method := this.typ.Method(m)

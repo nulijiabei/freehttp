@@ -38,10 +38,13 @@ freehttp
 	衍生输入类型:
 	
 		// Body
-		freehttp.Body		对应方法 -> freehttp.Request.ReadAllBody()
+		freehttp.Body			对应方法 -> freehttp.Request.ReadAllBody()
 		
 		// Json Body
-		freehttp.BodyJson	对应方法 -> freehttp.Request.ReadAllBodyJson()
+		freehttp.BodyJson		对应方法 -> freehttp.Request.ReadAllBodyJson()
+		
+		// Bufio.Reader
+		freehttp.BufioStream	对应方法 ->	freehttp.ResponseWriter.ReadBufioStream()
 		
 	衍生输出类型:
 		
@@ -52,8 +55,13 @@ freehttp
 		freehttp.JsonIndent		对应方法 -> freehttp.ResponseWriter.WriterJsonIndent()
 			
 		// HTTP Status
-		freehttp.Status			对应方法 -> freehttp.ResponseWriter.WriteHeader()
-
+		freehttp.HttpStatus		对应方法 -> freehttp.ResponseWriter.WriteHeader()
+		
+		// Content-Type
+		freehttp.ContentType	对应方法 ->	freehttp.ResponseWriter.SetContentType()
+		
+		// Bufio.Reader
+		freehttp.BufioStream	对应方法 ->	freehttp.ResponseWriter.WriterBufioStream()
 
 ----------------
 
@@ -88,29 +96,31 @@ freehttp
 	type Web struct {
 	}
 
-	// 输入参数，输出参数任意组合
-	func (this *Web) ReadWrite(w *freehttp.ResponseWriter, r *freehttp.Request) error {
-		// r.Request.PostForm
+	func (this *Web) ReadWrite(w *freehttp.ResponseWriter, r *freehttp.Request) {
 		w.ResponseWriter.Write([]byte("print"))
-		return fmt.Errorf("...")
 	}
 	
-	// 输入参数，输出参数任意组合
-	func (this *Web) WriteJson(r *freehttp.Request) freehttp.Json {
+	func (this *Web) WriteJson() (freehttp.Json, freehttp.JsonIndent) {
 		m := make(map[string]interface{})
 		m["baidu"] = "www.baidu.com"
-		return m
+		return m, m
 	}
 	
-	// 输入参数，输出参数任意组合
-	func (this *Web) Hello(w *freehttp.ResponseWriter, r *freehttp.Request, 
-		body freehttp.Body, bodyJson freehttp.BodyJson) (freehttp.Status, error) {
-		fmt.Println(body)
-		fmt.Println(bodyJson)
-		return 404, fmt.Errorf("...")
+	func (this *Web) ReadBody(body freehttp.Body, bodyJson freehttp.BodyJson) error {
+		return fmt.Errorf("what you see is a error")
+	}
+	
+	func (this *Web) WriteReturn() (freehttp.HttpStatus, freehttp.ContentType) {
+		return 200, "image/jpeg"
+	}
+	
+	func (this *Web) WriteBufioStream() freehttp.BufioStream {
+		return bufio.NewReader(strings.NewReader("what you see is a stream"))
+	}
+	
+	func (this *Web) ReadBufioStream(stream freehttp.BufioStream) {
 	}
 
-	// 主要
 	func main() {
 
 		// 创建 Server
@@ -118,7 +128,7 @@ freehttp
 
 		// 传入 Web 类
 		if err := s.Register(new(Web)); err != nil {
-			fmt.Println(err)
+			panic(err)
 		}
 	
 		// 启动监听端口
