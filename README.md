@@ -1,9 +1,19 @@
 ----------------
 freehttp
 
+<a href="https://godoc.org/github.com/nulijiabei/freehttp"><img src="https://godoc.org/github.com/nulijiabei/freehttp?status.svg" alt="GoDoc"></a>
+
 一个快速将类和子方法转换成HTTP接口
 
 主要是对net/http的一个反射封装，便于使用
+
+----------------
+
+安装
+
+	go get github.com/nulijiabei/freehttp
+	
+----------------
 
 	核心：
 		
