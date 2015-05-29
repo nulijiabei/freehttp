@@ -15,57 +15,58 @@ freehttp
 		server.Request.*         基于对 http.Request        的自定义帮助方法
 		server.ResponseWriter.*  基于对 http.ResponseWriter 的自定义帮助方法
 		
-	继承动态输出类型
+	继承输入类型:
 	
-		// 错误类型
-		error
-		
-		例如: func (this *MyStruct) MyFunc(...) error
-		
-		介绍: 返回 error 会作为日志输出
-	
-	衍生动态输出类型:
-	
-		// Json 普通格式
-		Json 原型 map[string]interface{}
-		
-		// Json 排版格式
-		JsonIndent 原型 map[string]interface{}
-	
-		例如: func (this *MyStruct) MyFunc() server.Json {}
-		
-		例如: func (this *MyStruct) MyFunc() server.JsonIndent {}
-		
-		介绍：返回类型为 server.Json 或 server.JsonIndent 数据会以 Json 方法回写
-			
-	继承动态输入类型:
-	
-		// 包装 http.ResponseWriter
-		type ResponseWriter struct { ResponseWriter http.ResponseWriter }
-		
-		// 包装 *http.Request
+		// 不限制使用 http.Request 内所有方法, 只在基础上进行扩展
 		type Request struct { Request *http.Request }
+
+	继承输出类型:
 	
-		例如: func (this *MyStruct) MyFunc(w server.ResponseWriter, r server.Request) {}
-		
-		介绍: 输入类型为 server.ResponseWriter 或 server.Request 
-		
-		则: 可以使用 *http.Request 和 http.ResponseWriter 集继承与自定义方法
-			
-	衍生动态输入类型:
+		// 不限制使用 http.ResponseWriter 内所有方法, 只在基础上进行扩展
+		type ResponseWriter struct { ResponseWriter http.ResponseWriter }
+	
+	衍生输入类型:
 	
 		// Body
-		Body 原型 []byte
+		type Body interface{}       对应方法 -> server.Request.ReadAllBody()
 		
 		// Json Body
-		BodyJson 原型 map[string]interface{}
+		type BodyJson interface{}   对应方法 -> server.Request.ReadAllBodyJson()
 		
-		例如: func (this *MyStruct) MyFunc(body server.Body, bodyJson server.BodyJson) {}
+		衍生输出类型:
 		
-		介绍: 输入类型为 server.Body 或 server.BodyJson 时，自动传入 Body 全部数据 或 转为Json传入
+		// Json 普通格式
+		type Json interface{}	     对应方法 -> server.ResponseWriter.WriterJson()
+		
+		// Json 排版格式
+		type JsonIndent interface{} 对应方法 -> server.ResponseWriter.WriterJsonIndent()
+			
+		// HTTP Status
+		type Status interface{}     对应方法 -> server.ResponseWriter.WriteHeader()
+
 
 ----------------
 
+	使用方法:
+	
+		不限制Struct的类型及名称
+		不限制Struct所属函数类型及名称(函数首字母大写)
+		输出参数和输出只能使用继承及衍生的类型作为参数
+		
+		可以将任意的输入类型作为输入参数使用，任意组合
+		可以将任意的输出类型作为输出参数使用，任意组合
+		框架会通过反射机制识别类型并调用对应方法执行.
+	
+	例如:
+	
+		func (this *MyStruct) MyFunc(
+			// 这里的传入参数只能使用继承或衍生输入类型
+		)   // 这里的返回参数只能使用继承或衍生输出类型
+		{}
+
+----------------
+
+	// 例
 	package main
 
 	import (
@@ -77,24 +78,26 @@ freehttp
 	type Web struct {
 	}
 
-	// 任意传入了 server.ResponseWriter 和 server.Request
-	func (this *Web) ReadWrite(w server.ResponseWriter, r server.Request) {
+	// 输入参数，输出参数任意组合
+	func (this *Web) ReadWrite(w *server.ResponseWriter, r *server.Request) error {
 		// r.Request.PostForm
 		w.ResponseWriter.Write([]byte("print"))
+		return fmt.Errorf("...")
 	}
 	
-	// 返回了一个 server.Json
-	func (this *Web) WriteJson() server.Json {
+	// 输入参数，输出参数任意组合
+	func (this *Web) WriteJson(r *server.Request) server.Json {
 		m := make(map[string]interface{})
 		m["baidu"] = "www.baidu.com"
 		return m
 	}
 	
-	// 任意传入了 server.Body 和 server.BodyJson 返回了 error
-	func (this *Web) Hello(body server.Body, bodyJson server.BodyJson) error {
+	// 输入参数，输出参数任意组合
+	func (this *Web) Hello(w *server.ResponseWriter, r *server.Request, 
+		body server.Body, bodyJson server.BodyJson) (server.Status, error) {
 		fmt.Println(body)
 		fmt.Println(bodyJson)
-		return fmt.Errorf("...")
+		return 404, fmt.Errorf("...")
 	}
 
 	// 主要

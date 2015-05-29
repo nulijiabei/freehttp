@@ -1,35 +1,11 @@
 package server
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"reflect"
 	"strings"
 )
-
-// 包装 http.ResponseWriter
-type ResponseWriter struct {
-	ResponseWriter http.ResponseWriter
-}
-
-// 包装 *http.Request
-type Request struct {
-	Request *http.Request
-}
-
-// Json 普通格式
-type Json map[string]interface{}
-
-// Json 排版格式
-type JsonIndent map[string]interface{}
-
-// Body
-type Body []byte
-
-// Json Body
-type BodyJson map[string]interface{}
 
 // Server Json HTTP
 // http://127.0.0.1:8080/MyStructName.MyFuncName
@@ -62,37 +38,42 @@ func (this *Server) Start(port string) error {
 // 内部方法 http 需要
 func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	status := false
+	request := &Request{r}
+	responseWriter := &ResponseWriter{w}
 	for name, method := range this.methods {
 		if strings.ToLower(fmt.Sprintf("/%s.%s", this.name, name)) == strings.ToLower(r.URL.Path) {
 			status = true
 			value := make([]reflect.Value, method.Type.NumIn())
 			value[0] = this.rcvr
 			for n := 1; n < method.Type.NumIn(); n++ {
-				switch method.Type.In(n).String() {
-				case "server.Request":
-					value[n] = reflect.ValueOf(Request{r})
-				case "server.ResponseWriter":
-					value[n] = reflect.ValueOf(ResponseWriter{w})
+				inType := method.Type.In(n).String()
+				switch inType {
+				case "*server.Request":
+					value[n] = reflect.ValueOf(request)
+				case "*server.ResponseWriter":
+					value[n] = reflect.ValueOf(responseWriter)
 				case "server.Body":
-					value[n] = reflect.ValueOf(this.ReadAllBody(r))
+					value[n] = reflect.ValueOf(request.ReadAllBody())
 				case "server.BodyJson":
-					value[n] = reflect.ValueOf(this.ReadAllBodyJson(r))
+					value[n] = reflect.ValueOf(request.ReadAllBodyJson())
+				default:
+					this.Error(fmt.Errorf("unsupported in type: %s\n", inType))
 				}
 			}
 			returnValues := method.Func.Call(value)
-			if method.Type.NumOut() == 1 {
-				if content := returnValues[0].Interface(); content != nil {
-					reType := method.Type.Out(0).String()
-					switch reType {
-					case "server.Json":
-						this.Error(this.WriterJson(w, content))
-					case "server.JsonIndent":
-						this.Error(this.WriterJsonIndent(w, content))
-					case "error":
-						this.Error(content.(error))
-					default:
-						this.Error(fmt.Errorf("unsupported return type: %s\n", reType))
-					}
+			for t := 0; t < method.Type.NumOut(); t++ {
+				reType := method.Type.Out(t).String()
+				switch reType {
+				case "server.Status":
+					responseWriter.WriteHeader(returnValues[t].Interface().(int))
+				case "server.Json":
+					this.Error(responseWriter.WriterJson(returnValues[t].Interface()))
+				case "server.JsonIndent":
+					this.Error(responseWriter.WriterJsonIndent(returnValues[t].Interface()))
+				case "error":
+					this.Error(returnValues[t].Interface().(error))
+				default:
+					this.Error(fmt.Errorf("unsupported out type: %s\n", reType))
 				}
 			}
 		}
@@ -122,46 +103,4 @@ func (this *Server) Register(rcvr interface{}) error {
 		this.methods[mname] = method
 	}
 	return nil
-}
-
-// 将 map[string]interface{} 转 Json 并回写
-func (this *Server) WriterJson(w http.ResponseWriter, content interface{}) error {
-	data, err := json.Marshal(content.(Json))
-	if err != nil {
-		return err
-	}
-	_, err = w.Write(data)
-	return err
-}
-
-// 将 map[string]interface{} 转 Json 并回写
-func (this *Server) WriterJsonIndent(w http.ResponseWriter, content interface{}) error {
-	data, err := json.MarshalIndent(content.(JsonIndent), "", "  ")
-	if err != nil {
-		return err
-	}
-	_, err = w.Write(data)
-	return err
-}
-
-// 读取全部 Body 数据
-func (this *Server) ReadAllBody(r *http.Request) []byte {
-	data, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		return nil
-	}
-	return data
-}
-
-// 读取全部 Body 数据转为 Json
-func (this *Server) ReadAllBodyJson(r *http.Request) map[string]interface{} {
-	data, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		return nil
-	}
-	var content interface{}
-	if err := json.Unmarshal(data, &content); err != nil {
-		return nil
-	}
-	return content.(map[string]interface{})
 }

@@ -8,7 +8,7 @@ import (
 type Web struct {
 }
 
-func (this *Web) ReadWrite(w server.ResponseWriter, r server.Request) {
+func (this *Web) ReadWrite(w *server.ResponseWriter, r *server.Request) {
 	// r.Request.PostForm
 	w.ResponseWriter.Write([]byte("print"))
 }
@@ -19,10 +19,10 @@ func (this *Web) WriteJson() server.Json {
 	return m
 }
 
-func (this *Web) Hello(body server.Body, bodyJson server.BodyJson) error {
+func (this *Web) Hello(w *server.ResponseWriter, r *server.Request, body server.Body, bodyJson server.BodyJson) (server.Status, error) {
 	fmt.Println(body)
 	fmt.Println(bodyJson)
-	return fmt.Errorf("...")
+	return 404, fmt.Errorf("...")
 }
 
 func main() {
