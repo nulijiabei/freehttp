@@ -38,10 +38,10 @@ freehttp
 	衍生输入类型:
 	
 		// Body
-		freehttp.Body			对应方法 -> freehttp.Request.ReadAllBody()
+		freehttp.Body			对应方法 -> freehttp.Request.ReadBody()
 		
 		// Json Body
-		freehttp.BodyJson		对应方法 -> freehttp.Request.ReadAllBodyJson()
+		freehttp.BodyJson		对应方法 -> freehttp.Request.ReadBodyJson()
 		
 		// Bufio.Reader
 		freehttp.BufioStream	对应方法 ->	freehttp.ResponseWriter.ReadBufioStream()
