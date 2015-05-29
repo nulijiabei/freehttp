@@ -33,7 +33,7 @@ freehttp
 		// Json Body
 		type BodyJson interface{}   对应方法 -> server.Request.ReadAllBodyJson()
 		
-		衍生输出类型:
+	衍生输出类型:
 		
 		// Json 普通格式
 		type Json interface{}	     对应方法 -> server.ResponseWriter.WriterJson()
