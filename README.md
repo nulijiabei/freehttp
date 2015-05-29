@@ -38,30 +38,30 @@ freehttp
 	衍生输入类型:
 	
 		// Body
-		freehttp.Body			原型 ->	map[string]interface{}	对应方法 -> freehttp.Request.ReadBody() 
+		freehttp.Body			原型 ->	map[string]interface{}
 		
 		// Json Body
-		freehttp.BodyJson		原型 ->	map[string]interface{}	对应方法 -> freehttp.Request.ReadBodyJson()
+		freehttp.BodyJson		原型 ->	map[string]interface{}
 		
 		// Bufio.Reader
-		freehttp.BufioStream	原型 ->	*bufio.Reader			对应方法 ->	freehttp.ResponseWriter.ReadBufioStream()
+		freehttp.BufioStream	原型 ->	*bufio.Reader
 		
 	衍生输出类型:
 		
 		// Json 普通格式
-		freehttp.Json			原型 ->	map[string]interface{}	对应方法 -> freehttp.ResponseWriter.WriterJson() 		 
+		freehttp.Json			原型 ->	map[string]interface{}	 
 		
 		// Json 排版格式
-		freehttp.JsonIndent		原型 ->	map[string]interface{}	对应方法 -> freehttp.ResponseWriter.WriterJsonIndent()
+		freehttp.JsonIndent		原型 ->	map[string]interface{}
 			
 		// HTTP Status
-		freehttp.HttpStatus		原型 ->	int						对应方法 -> freehttp.ResponseWriter.WriteHeader()
+		freehttp.HttpStatus		原型 ->	int
 		
 		// Content-Type
-		freehttp.ContentType	原型 ->	string					对应方法 ->	freehttp.ResponseWriter.SetContentType()
+		freehttp.ContentType	原型 ->	string
 		
 		// Bufio.Reader
-		freehttp.BufioStream	原型 ->	*bufio.Reader			对应方法 ->	freehttp.ResponseWriter.WriterBufioStream()
+		freehttp.BufioStream	原型 ->	*bufio.Reader
 		
 ----------------
 
@@ -77,7 +77,10 @@ freehttp
 	
 	例如:
 	
-		func (this *MyStruct) MyFunc( // 这里的传入参数只能使用继承或衍生输入类型 ) // 这里的返回参数只能使用继承或衍生输出类型 {}
+		func (this *MyStruct) MyFunc( 
+		// 这里的传入参数只能使用继承或衍生输入类型 ) 
+		// 这里的返回参数只能使用继承或衍生输出类型 
+		{}
 		
 	转换:
 	
