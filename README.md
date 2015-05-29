@@ -28,31 +28,31 @@ freehttp
 	继承输入类型:
 	
 		// 不限制使用 http.Request 内所有方法, 只在基础上进行扩展
-		type Request struct { Request *http.Request }
+		freehttp.Request.Request = *http.Request
 
 	继承输出类型:
 	
 		// 不限制使用 http.ResponseWriter 内所有方法, 只在基础上进行扩展
-		type ResponseWriter struct { ResponseWriter http.ResponseWriter }
+		freehttp.ResponseWriter.ResponseWriter = http.ResponseWriter 
 	
 	衍生输入类型:
 	
 		// Body
-		type Body interface{}       对应方法 -> freehttp.Request.ReadAllBody()
+		freehttp.Body		对应方法 -> freehttp.Request.ReadAllBody()
 		
 		// Json Body
-		type BodyJson interface{}   对应方法 -> freehttp.Request.ReadAllBodyJson()
+		freehttp.BodyJson	对应方法 -> freehttp.Request.ReadAllBodyJson()
 		
 	衍生输出类型:
 		
 		// Json 普通格式
-		type Json interface{}	     对应方法 -> freehttp.ResponseWriter.WriterJson()
+		freehttp.Json			对应方法 -> freehttp.ResponseWriter.WriterJson()
 		
 		// Json 排版格式
-		type JsonIndent interface{} 对应方法 -> freehttp.ResponseWriter.WriterJsonIndent()
+		freehttp.JsonIndent		对应方法 -> freehttp.ResponseWriter.WriterJsonIndent()
 			
 		// HTTP Status
-		type Status interface{}     对应方法 -> freehttp.ResponseWriter.WriteHeader()
+		freehttp.Status			对应方法 -> freehttp.ResponseWriter.WriteHeader()
 
 
 ----------------
