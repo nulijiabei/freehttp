@@ -16,6 +16,7 @@ type ResponseWriter struct {
 // New ResponseWriter
 func NewResponseWriter(w http.ResponseWriter) *ResponseWriter {
 	responseWriter := new(ResponseWriter)
+	responseWriter.ResponseWriter = w
 	responseWriter.Writer = bufio.NewWriter(w)
 	return responseWriter
 }

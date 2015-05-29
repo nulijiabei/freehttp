@@ -1,26 +1,22 @@
 package freehttp
 
-import (
-	"bufio"
-)
-
 // Json 普通格式
-type Json map[string]interface{}
+type Json interface{}
 
 // Json 排版格式
-type JsonIndent map[string]interface{}
+type JsonIndent interface{}
 
 // Body
-type Body []byte
+type Body interface{}
 
 // Json Body
-type BodyJson map[string]interface{}
+type BodyJson interface{}
 
 // HTTP-Status
-type HttpStatus int
+type HttpStatus interface{}
 
 // Content-Type
-type ContentType string
+type ContentType interface{}
 
 // Bufio.Reader
-type BufioStream *bufio.Reader
+type BufioStream interface{}

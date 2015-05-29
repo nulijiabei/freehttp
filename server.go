@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"reflect"
+	"runtime"
 	"strings"
 )
 
@@ -26,12 +27,13 @@ func NewServer() *Server {
 // 错误输出
 func (this *Server) Error(err error) {
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Println("server exception:", err.Error())
 	}
 }
 
 // 启动服务
 func (this *Server) Start(port string) error {
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	return http.ListenAndServe(port, this)
 }
 
@@ -41,7 +43,8 @@ func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	request := NewRequest(r)
 	responseWriter := NewResponseWriter(w)
 	for name, method := range this.methods {
-		if strings.ToLower(fmt.Sprintf("/%s.%s", this.name, name)) == strings.ToLower(r.URL.Path) {
+		path := strings.Split(r.URL.Path, "/")
+		if strings.ToLower(fmt.Sprintf("%s.%s", this.name, name)) == strings.ToLower(path[len(path)-1]) {
 			status = true
 			value := make([]reflect.Value, method.Type.NumIn())
 			value[0] = this.rcvr
