@@ -22,8 +22,8 @@ func NewResponseWriter(w http.ResponseWriter) *ResponseWriter {
 }
 
 // 回写 HTTP Status
-func (this *ResponseWriter) WriteHeader(status interface{}) {
-	this.ResponseWriter.WriteHeader(status.(int))
+func (this *ResponseWriter) WriteHeader(content interface{}) {
+	this.ResponseWriter.WriteHeader(content.(int))
 }
 
 // 转 Json 并回写

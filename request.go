@@ -25,20 +25,20 @@ func NewRequest(r *http.Request) *Request {
 func (this *Request) ReadBody() []byte {
 	body, err := ioutil.ReadAll(this.Reader)
 	if err != nil {
-		return make([]byte, 0)
+		return []byte{}
 	}
 	return body
 }
 
 // 读取全部 Body 数据转为 Json
-func (this *Request) ReadBodyJson() interface{} {
+func (this *Request) ReadBodyJson() map[string]interface{} {
 	data, err := ioutil.ReadAll(this.Reader)
 	if err != nil {
-		return make(map[string]interface{})
+		return map[string]interface{}{}
 	}
-	var content interface{}
+	var content map[string]interface{}
 	if err := json.Unmarshal(data, &content); err != nil {
-		return make(map[string]interface{})
+		return map[string]interface{}{}
 	}
 	return content
 }
