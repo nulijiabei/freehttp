@@ -20,8 +20,13 @@ func (this *Web) WriteJson() (freehttp.Json, freehttp.JsonIndent) {
 	return m, m
 }
 
-func (this *Web) ReadBody(body freehttp.Body, bodyJson freehttp.BodyJson) error {
+func (this *Web) ReadBody(body freehttp.Body) error {
+	// body.(map[string]interface{})
 	return fmt.Errorf("...")
+}
+
+func (this *Web) ReadBodyJson(bodyJson freehttp.BodyJson) {
+	// bodyJson.(map[string]interface{})
 }
 
 func (this *Web) WriteReturn() freehttp.HttpStatus {

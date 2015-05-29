@@ -114,8 +114,11 @@ freehttp
 		return m, m
 	}
 	
-	func (this *Web) ReadBody(body freehttp.Body, bodyJson freehttp.BodyJson) error {
+	func (this *Web) ReadBody(body freehttp.Body) error {
 		return fmt.Errorf("...")
+	}
+	
+	func (this *Web) ReadBodyJson(bodyJson freehttp.BodyJson) {
 	}
 	
 	func (this *Web) WriteReturn() freehttp.HttpStatus {
@@ -127,7 +130,6 @@ freehttp
 	}
 	
 	func (this *Web) ReadBufioStream(stream freehttp.BufioStream) {
-		// stream.(*bufio.Reader)
 	}
 	
 	func (this *Web) WriteBufioStream() freehttp.BufioStream {
