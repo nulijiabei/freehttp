@@ -83,12 +83,7 @@ func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-/*
-	// 一个以Json开头的命令的函数, 返回的map[string]interface{}自动被处理成Json发送
-	func (this *Hello) JsonHello(r server.Request) map[string]interface{} {}
-	// 非以Json开头的命令的函数, 则默认为HTTP函数
-	func (this *Hello) Hello(w server.ResponseWriter, r server.Request) {}
-*/
+// 将类及方法注册到FreeHttp
 func (this *Server) Register(rcvr interface{}) error {
 	this.typ = reflect.TypeOf(rcvr)
 	this.rcvr = reflect.ValueOf(rcvr)
