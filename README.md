@@ -7,13 +7,13 @@ freehttp
 
 	核心：
 		
-		server.Request        封装于  http.Request
-		server.ResponseWriter 封装于  http.ResponseWriter
+		freehttp.Request        封装于  http.Request
+		freehttp.ResponseWriter 封装于  http.ResponseWriter
 
 	衍生帮助方法:
 	
-		server.Request.*         基于对 http.Request        的自定义帮助方法
-		server.ResponseWriter.*  基于对 http.ResponseWriter 的自定义帮助方法
+		freehttp.Request.*         基于对 http.Request        的自定义帮助方法
+		freehttp.ResponseWriter.*  基于对 http.ResponseWriter 的自定义帮助方法
 		
 	继承输入类型:
 	
@@ -28,21 +28,21 @@ freehttp
 	衍生输入类型:
 	
 		// Body
-		type Body interface{}       对应方法 -> server.Request.ReadAllBody()
+		type Body interface{}       对应方法 -> freehttp.Request.ReadAllBody()
 		
 		// Json Body
-		type BodyJson interface{}   对应方法 -> server.Request.ReadAllBodyJson()
+		type BodyJson interface{}   对应方法 -> freehttp.Request.ReadAllBodyJson()
 		
 	衍生输出类型:
 		
 		// Json 普通格式
-		type Json interface{}	     对应方法 -> server.ResponseWriter.WriterJson()
+		type Json interface{}	     对应方法 -> freehttp.ResponseWriter.WriterJson()
 		
 		// Json 排版格式
-		type JsonIndent interface{} 对应方法 -> server.ResponseWriter.WriterJsonIndent()
+		type JsonIndent interface{} 对应方法 -> freehttp.ResponseWriter.WriterJsonIndent()
 			
 		// HTTP Status
-		type Status interface{}     对应方法 -> server.ResponseWriter.WriteHeader()
+		type Status interface{}     对应方法 -> freehttp.ResponseWriter.WriteHeader()
 
 
 ----------------
@@ -71,7 +71,7 @@ freehttp
 
 	import (
 		"fmt"
-		"server" // 导入 server 包
+		"freehttp" // 导入 freehttp 包
 	)
 
 	// 随便定义一个类
@@ -79,22 +79,22 @@ freehttp
 	}
 
 	// 输入参数，输出参数任意组合
-	func (this *Web) ReadWrite(w *server.ResponseWriter, r *server.Request) error {
+	func (this *Web) ReadWrite(w *freehttp.ResponseWriter, r *freehttp.Request) error {
 		// r.Request.PostForm
 		w.ResponseWriter.Write([]byte("print"))
 		return fmt.Errorf("...")
 	}
 	
 	// 输入参数，输出参数任意组合
-	func (this *Web) WriteJson(r *server.Request) server.Json {
+	func (this *Web) WriteJson(r *freehttp.Request) freehttp.Json {
 		m := make(map[string]interface{})
 		m["baidu"] = "www.baidu.com"
 		return m
 	}
 	
 	// 输入参数，输出参数任意组合
-	func (this *Web) Hello(w *server.ResponseWriter, r *server.Request, 
-		body server.Body, bodyJson server.BodyJson) (server.Status, error) {
+	func (this *Web) Hello(w *freehttp.ResponseWriter, r *freehttp.Request, 
+		body freehttp.Body, bodyJson freehttp.BodyJson) (freehttp.Status, error) {
 		fmt.Println(body)
 		fmt.Println(bodyJson)
 		return 404, fmt.Errorf("...")
