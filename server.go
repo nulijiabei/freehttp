@@ -59,6 +59,8 @@ func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					value[n] = reflect.ValueOf(request.ReadBody())
 				case "freehttp.BodyJson":
 					value[n] = reflect.ValueOf(request.ReadBodyJson())
+				case "freehttp.ContentType":
+					value[n] = reflect.ValueOf(request.ReadContentType())
 				case "freehttp.BufioStream":
 					value[n] = reflect.ValueOf(request.ReadBufioStream())
 				default:

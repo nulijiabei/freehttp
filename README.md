@@ -80,16 +80,6 @@ freehttp
 		func (this *MyStruct) MyFunc( 
 		// 这里的传入参数只能使用继承或衍生输入类型 ) 
 		// 这里的返回参数只能使用继承或衍生输出类型 {}
-		
-	转换:
-	
-		例如: freehttp.Body 其实是 type Body []byte
-		
-		// 在如下函数中使用时，可以通过转换获取原有对象及方法
-		func (this *MyStruct) MyFunc(body freehttp.Body) 
-		{
-			body.([]byte) // 转换
-		} 
 
 ----------------
 

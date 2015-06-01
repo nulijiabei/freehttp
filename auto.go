@@ -16,6 +16,9 @@ type HttpStatus int
 // Content-Type
 type ContentType string
 
+// Cookie
+type Cookie string
+
 // Body
 type Body []byte
 

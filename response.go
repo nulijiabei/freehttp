@@ -28,7 +28,7 @@ func (this *ResponseWriter) WriteHeader(content interface{}) {
 
 // 转 Json 并回写
 func (this *ResponseWriter) WriterJson(content interface{}) error {
-	data, err := json.Marshal(content.(Json))
+	data, err := json.Marshal(content)
 	if err != nil {
 		return err
 	}

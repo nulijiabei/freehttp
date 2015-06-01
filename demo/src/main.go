@@ -20,8 +20,9 @@ func (this *Web) WriteJson() (freehttp.Json, freehttp.JsonIndent) {
 	return m, m
 }
 
-func (this *Web) ReadBody(body freehttp.Body) error {
-	// body.(map[string]interface{})
+func (this *Web) ReadBody(t freehttp.ContentType) error {
+	//	fmt.Println(string(body))
+	fmt.Println(t)
 	return fmt.Errorf("...")
 }
 
