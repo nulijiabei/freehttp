@@ -52,7 +52,7 @@ func (this *ResponseWriter) SetContentType(content interface{}) {
 }
 
 // 回写 Bufio Stream
-func (this *ResponseWriter) WriterBufioStream(content interface{}) error {
+func (this *ResponseWriter) WriterStream(content interface{}) error {
 	if _, err := io.Copy(this.Writer, content.(*bufio.Reader)); err != nil {
 		return err
 	}

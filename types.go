@@ -19,11 +19,5 @@ type ContentType string
 // Cookie
 type Cookie string
 
-// Body
-type Body []byte
-
-// Json Body
-type BodyJson map[string]interface{}
-
 // Bufio.Reader
-type BufioStream *bufio.Reader
+type Stream *bufio.Reader

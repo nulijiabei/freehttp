@@ -52,6 +52,7 @@ func main() {
 	if err := s.Register(new(Web)); err != nil {
 		fmt.Println(err)
 	}
+
 	s.Start(":8080")
 
 }

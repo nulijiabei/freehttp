@@ -43,8 +43,9 @@ func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	request := NewRequest(r)
 	responseWriter := NewResponseWriter(w)
 	for name, method := range this.methods {
-		path := strings.Split(r.URL.Path, "/")
-		if strings.ToLower(fmt.Sprintf("%s.%s", this.name, name)) == strings.ToLower(path[len(path)-1]) {
+		path := strings.ToLower(strings.Split(r.URL.Path, "/")[len(strings.Split(r.URL.Path, "/"))-1])
+		def := strings.ToLower(fmt.Sprintf("%s.%s", this.name, name))
+		if def == path {
 			status = true
 			value := make([]reflect.Value, method.Type.NumIn())
 			value[0] = this.rcvr
@@ -55,14 +56,12 @@ func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					value[n] = reflect.ValueOf(request)
 				case "*freehttp.ResponseWriter":
 					value[n] = reflect.ValueOf(responseWriter)
-				case "freehttp.Body":
-					value[n] = reflect.ValueOf(request.ReadBody())
-				case "freehttp.BodyJson":
-					value[n] = reflect.ValueOf(request.ReadBodyJson())
+				case "freehttp.Json":
+					value[n] = reflect.ValueOf(request.ReadJson())
 				case "freehttp.ContentType":
 					value[n] = reflect.ValueOf(request.ReadContentType())
-				case "freehttp.BufioStream":
-					value[n] = reflect.ValueOf(request.ReadBufioStream())
+				case "freehttp.Stream":
+					value[n] = reflect.ValueOf(request.ReadStream())
 				default:
 					this.Error(fmt.Errorf("unsupported in type: %s", inType))
 				}
@@ -84,8 +83,8 @@ func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					this.Error(responseWriter.WriterJson(content))
 				case "freehttp.JsonIndent":
 					this.Error(responseWriter.WriterJsonIndent(content))
-				case "freehttp.BufioStream":
-					this.Error(responseWriter.WriterBufioStream(content))
+				case "freehttp.Stream":
+					this.Error(responseWriter.WriterStream(content))
 				case "error":
 					this.Error(content.(error))
 				default:

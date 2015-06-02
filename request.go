@@ -21,17 +21,13 @@ func NewRequest(r *http.Request) *Request {
 	return request
 }
 
-// 读取全部 Body 数据
-func (this *Request) ReadBody() Body {
-	body, err := ioutil.ReadAll(this.Reader)
-	if err != nil {
-		return []byte{}
-	}
-	return body
+// Close Request
+func (this *Request) Close() {
+	this.Request.Body.Close()
 }
 
 // 读取全部 Body 数据转为 Json
-func (this *Request) ReadBodyJson() BodyJson {
+func (this *Request) ReadJson() Json {
 	data, err := ioutil.ReadAll(this.Reader)
 	if err != nil {
 		return map[string]interface{}{}
@@ -44,7 +40,7 @@ func (this *Request) ReadBodyJson() BodyJson {
 }
 
 // 读取 Bufio Stream
-func (this *Request) ReadBufioStream() BufioStream {
+func (this *Request) ReadStream() Stream {
 	return bufio.NewReader(this.Reader)
 }
 
