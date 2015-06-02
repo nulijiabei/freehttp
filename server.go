@@ -34,15 +34,11 @@ func (this *Server) Error(err error) {
 // 启动服务
 func (this *Server) Start(port string) error {
 	runtime.GOMAXPROCS(runtime.NumCPU())
-	// func ListenAndServe(addr string, handler Handler) error
+	// ListenAndServe(addr string, handler Handler)
 	return http.ListenAndServe(port, this)
 }
 
-/*
-	type Handler interface {
-	    ServeHTTP(ResponseWriter, *Request)
-	}
-*/
+// 包含 ServeHTTP(ResponseWriter, *Request) 函数符合 Handler 接口
 func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	status := false
 	request := NewRequest(r)

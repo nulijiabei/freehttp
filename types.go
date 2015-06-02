@@ -21,7 +21,3 @@ type Cookie string
 
 // Bufio.Reader
 type Stream *bufio.Reader
-
-type Stream struct {
-	Reader *bufio.Reader
-}

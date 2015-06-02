@@ -32,11 +32,11 @@ func (this *Request) ReadJson() Json {
 	if err != nil {
 		return map[string]interface{}{}
 	}
-	var content map[string]interface{}
+	var content interface{}
 	if err := json.Unmarshal(data, &content); err != nil {
 		return map[string]interface{}{}
 	}
-	return content
+	return content.(map[string]interface{})
 }
 
 // 读取 Bufio Stream
