@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"freehttp"
+	"io"
+	"os"
 	"strings"
 )
 
@@ -20,14 +22,8 @@ func (this *Web) WriteJson() (freehttp.Json, freehttp.JsonIndent) {
 	return m, m
 }
 
-func (this *Web) ReadBody(t freehttp.ContentType) error {
-	//	fmt.Println(string(body))
-	fmt.Println(t)
-	return fmt.Errorf("...")
-}
-
-func (this *Web) ReadBodyJson(bodyJson freehttp.BodyJson) {
-	// bodyJson.(map[string]interface{})
+func (this *Web) Download() freehttp.File {
+	return "freehttp/README.md"
 }
 
 func (this *Web) WriteReturn() freehttp.HttpStatus {
@@ -38,11 +34,19 @@ func (this *Web) WriteStatus() freehttp.ContentType {
 	return "image/jpeg"
 }
 
-func (this *Web) ReadBufioStream(stream freehttp.BufioStream) {
-	// stream.(*bufio.Reader)
+func (this *Web) ReadStream(w *freehttp.ResponseWriter, stream freehttp.Stream) error {
+	// Content-Type ...
+	f, err := os.Open("freehttp/README.md")
+	if err != nil {
+		return err
+	}
+	if _, err := io.Copy(w.Writer, bufio.NewReader(f)); err != nil {
+		return err
+	}
+	return nil
 }
 
-func (this *Web) WriteBufioStream() freehttp.BufioStream {
+func (this *Web) WriteBufioStream() freehttp.Stream {
 	return bufio.NewReader(strings.NewReader("..."))
 }
 

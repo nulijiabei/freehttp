@@ -4,10 +4,10 @@ import (
 	"bufio"
 )
 
-// Json 普通格式
+// Json
 type Json map[string]interface{}
 
-// Json 排版格式
+// Json Indent
 type JsonIndent map[string]interface{}
 
 // HTTP-Status
@@ -21,3 +21,6 @@ type Cookie string
 
 // Bufio.Reader
 type Stream *bufio.Reader
+
+// File
+type File string

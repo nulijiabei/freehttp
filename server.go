@@ -25,9 +25,9 @@ func NewServer() *Server {
 }
 
 // 错误输出
-func (this *Server) Error(err error) {
+func (this *Server) Error(err interface{}) {
 	if err != nil {
-		fmt.Println("server exception:", err.Error())
+		fmt.Println("server exception:", err.(error).Error())
 	}
 }
 
@@ -71,7 +71,7 @@ func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			for t := 0; t < method.Type.NumOut(); t++ {
 				reType := method.Type.Out(t).String()
 				content := returnValues[t].Interface()
-				if content == nil {
+				if content == nil && reType != "error" {
 					this.Error(fmt.Errorf("%s out value is null -> %s", name, reType))
 					continue
 				}
@@ -86,8 +86,10 @@ func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					this.Error(responseWriter.WriterJsonIndent(content))
 				case "freehttp.Stream":
 					this.Error(responseWriter.WriterStream(content))
+				case "freehttp.File":
+					this.Error(responseWriter.WriterFile(content))
 				case "error":
-					this.Error(content.(error))
+					this.Error(content)
 				default:
 					this.Error(fmt.Errorf("unsupported out type: %s", reType))
 				}
