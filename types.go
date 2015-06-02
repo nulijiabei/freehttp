@@ -16,9 +16,6 @@ type HttpStatus int
 // Content-Type
 type ContentType string
 
-// Cookie
-type Cookie string
-
 // Bufio.Reader
 type Stream *bufio.Reader
 

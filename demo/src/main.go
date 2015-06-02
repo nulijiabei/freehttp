@@ -46,6 +46,10 @@ func (this *Web) ReadStream(w *freehttp.ResponseWriter, stream freehttp.Stream) 
 	return nil
 }
 
+func (this *Web) Proxy(r *freehttp.Request) freehttp.Proxy {
+	return r.Request
+}
+
 func (this *Web) WriteBufioStream() freehttp.Stream {
 	return bufio.NewReader(strings.NewReader("..."))
 }
