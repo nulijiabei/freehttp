@@ -98,7 +98,6 @@ func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if !status {
-		fmt.Println("NotFound...")
 		http.NotFound(w, r)
 	}
 }
