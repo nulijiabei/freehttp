@@ -26,7 +26,8 @@ func (this *Web) Download(rw *freehttp.FreeHttp) freehttp.File {
 	return "/Users/nljb/MyCore/git/github/freehttp/README.md"
 }
 
-func (this *Web) WriteReturn() freehttp.HttpStatus {
+func (this *Web) WriteReturn(w *freehttp.ResponseWriter) freehttp.HttpStatus {
+	r.Request.Body
 	return 404
 }
 
@@ -46,7 +47,7 @@ func (this *Web) ReadStream(rw *freehttp.FreeHttp, stream freehttp.Stream) error
 	return nil
 }
 
-func (this *Web) WriteBufioStream() freehttp.Stream {
+func (this *Web) WriteStream() freehttp.Stream {
 	return bufio.NewReader(strings.NewReader("..."))
 }
 

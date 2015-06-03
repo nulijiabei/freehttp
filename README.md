@@ -16,35 +16,64 @@ freehttp
 ----------------
 
 	核心：
+	
+		// FreeHttp
+		freehttp.FreeHttp
 		
-		freehttp.Request        封装于  http.Request
-		freehttp.ResponseWriter 封装于  http.ResponseWriter
+			SuperResponseWriter 	*freehttp.ResponseWriter
+			SuperRequest        	*freehttp.Request
+		
+			freehttp.Request		封装于	http.Request
+			freehttp.Reader			封装于	http.Request.Body -> bufio.NewReader(Body)
+				
+			freehttp.ResponseWriter	封装于	http.ResponseWriter
+			freehttp.Writer			封装于	http.ResponseWriter.Body -> bufio.NewWriter(Body)
 
 	衍生帮助方法:
 	
-		freehttp.Request.*         基于对 http.Request        的自定义帮助方法
-		freehttp.ResponseWriter.*  基于对 http.ResponseWriter 的自定义帮助方法
+		freehttp.Request.*			基于对 http.Request        的自定义帮助方法
+		freehttp.ResponseWriter.*	基于对 http.ResponseWriter 的自定义帮助方法
+		
+	核心输入类型:
+	
+		// 类型
+		freehttp.FreeHttp
+	
+		// 例如
+		func (this *Struct) MyFunc(rw *freehttp.FreeHttp) {
+			rw.SuperResponseWriter.ResponseWriter.Write([]byte("print"))
+		}
 		
 	继承输入类型:
 	
-		// 不限制使用 http.Request 内所有方法, 只在基础上进行扩展
-		freehttp.Request.Request = *http.Request
+		// 类型
+		freehttp.Request = *http.Request
+		
+		// 例如
+		func (this *Struct) MyFunc(r *freehttp.Request) {
+			// r.Request.Body
+		}
 
 	继承输出类型:
 	
-		// 不限制使用 http.ResponseWriter 内所有方法, 只在基础上进行扩展
-		freehttp.ResponseWriter.ResponseWriter = http.ResponseWriter 
+		// 类型
+		freehttp.ResponseWriter = http.ResponseWriter 
+		
+		// 例如
+		func (this *Struct) MyFunc(w *freehttp.ResponseWriter) {
+			// w.ResponseWriter.Write()
+		}
 	
 	衍生输入类型:
-	
-		// Body
-		freehttp.Body			原型 ->	map[string]interface{}
-		
-		// Json Body
-		freehttp.BodyJson		原型 ->	map[string]interface{}
 		
 		// Bufio.Reader
-		freehttp.BufioStream	原型 ->	*bufio.Reader
+		freehttp.Stream			原型 ->	*bufio.Reader
+		
+		// 例如
+		func (this *Struct) MyFunc(stream freehttp.Stream) {
+			f, _ := os.Open("../freehttp/README.md")
+			io.Copy(rw.SuperResponseWriter.Writer, bufio.NewReader(f))
+		}
 		
 	衍生输出类型:
 		
@@ -53,34 +82,47 @@ freehttp
 		
 		// Json 排版格式
 		freehttp.JsonIndent		原型 ->	map[string]interface{}
+
+		// 例如
+		func (this *Struct) MyFunc() (freehttp.Json, freehttp.JsonIndent) {
+			m := make(map[string]interface{})
+			m["baidu"] = "www.baidu.com"
+			return m, m
+		}
 			
 		// HTTP Status
 		freehttp.HttpStatus		原型 ->	int
 		
+		// 例如
+		func (this *Struct) MyFunc() freehttp.HttpStatus {
+			return 404
+		}
+		
 		// Content-Type
 		freehttp.ContentType	原型 ->	string
 		
+		// 例如
+		func (this *Struct) MyFunc() freehttp.ContentType {
+			return "image/gif"
+		}
+		
 		// Bufio.Reader
-		freehttp.BufioStream	原型 ->	*bufio.Reader
+		freehttp.Stream			原型 ->	*bufio.Reader
 		
-----------------
-
-	使用方法:
-	
-		不限制Struct的类型及名称
-		不限制Struct所属函数类型及名称(函数首字母大写)
-		输出参数和输出只能使用继承及衍生的类型作为参数
+		// 例如
+		func (this *Struct) MyFunc() freehttp.Stream {
+			return bufio.NewReader(strings.NewReader("..."))
+		}
 		
-		可以将任意的输入类型作为输入参数使用，任意组合
-		可以将任意的输出类型作为输出参数使用，任意组合
-		框架会通过反射机制识别类型并调用对应方法执行.
-	
-	例如:
-	
-		func (this *MyStruct) MyFunc( 
-		// 这里的传入参数只能使用继承或衍生输入类型 ) 
-		// 这里的返回参数只能使用继承或衍生输出类型 {}
+		// File
+		freehttp.File			原型 -> string
+		
+		// 例如
+		func (this *Struct) MyFunc() freehttp.File {
+			return ".../freehttp/README.md"
+		}
 
+		
 ----------------
 
 	// 例
@@ -94,38 +136,15 @@ freehttp
 	// 随便定义一个类
 	type Web struct {}
 
-	func (this *Web) ReadWrite(w *freehttp.ResponseWriter, r *freehttp.Request) {
-		w.ResponseWriter.Write([]byte("print"))
-	}
-	
-	func (this *Web) WriteJson() (freehttp.Json, freehttp.JsonIndent) {
-		m := make(map[string]interface{})
-		m["baidu"] = "www.baidu.com"
-		return m, m
-	}
-	
-	func (this *Web) ReadBody(body freehttp.Body) error {
-		return fmt.Errorf("...")
-	}
-	
-	func (this *Web) ReadBodyJson(bodyJson freehttp.BodyJson) {
-	}
-	
-	func (this *Web) WriteReturn() freehttp.HttpStatus {
-		return 404
-	}
-	
-	func (this *Web) WriteStatus() freehttp.ContentType {
-		return "image/jpeg"
-	}
-	
-	func (this *Web) ReadBufioStream(stream freehttp.BufioStream) {
-	}
-	
-	func (this *Web) WriteBufioStream() freehttp.BufioStream {
-		return bufio.NewReader(strings.NewReader("..."))
-	}
 
+	// 随便定义一些方法
+	// http://127.0.0.1:8080/StructName.FuncName
+	func (this *Web) MyFunc(输入类型 + 输入类型 + ...) 输出类型 + 输出类型 + ... {
+		// 使用输入类型 ...
+		// 返回输出类型 ...
+	}
+	
+	// 启动
 	func main() {
 
 		// 创建 Server
