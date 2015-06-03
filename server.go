@@ -41,28 +41,29 @@ func (this *Server) Start(port string) error {
 // 包含 ServeHTTP(ResponseWriter, *Request) 函数符合 Handler 接口
 func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	status := false
-	request := NewRequest(r)
-	responseWriter := NewResponseWriter(w)
+	freehttp := NewFreeHttp(w, r)
+	r.URL.Path = strings.ToLower(strings.Split(r.URL.Path, "/")[len(strings.Split(r.URL.Path, "/"))-1])
 	for name, method := range this.methods {
-		path := strings.ToLower(strings.Split(r.URL.Path, "/")[len(strings.Split(r.URL.Path, "/"))-1])
 		def := strings.ToLower(fmt.Sprintf("%s.%s", this.name, name))
-		if def == path {
+		if def == r.URL.Path {
 			status = true
 			value := make([]reflect.Value, method.Type.NumIn())
 			value[0] = this.rcvr
 			for n := 1; n < method.Type.NumIn(); n++ {
 				inType := method.Type.In(n).String()
 				switch inType {
+				case "*freehttp.FreeHttp":
+					value[n] = reflect.ValueOf(freehttp)
 				case "*freehttp.Request":
-					value[n] = reflect.ValueOf(request)
+					value[n] = reflect.ValueOf(freehttp.SuperRequest)
 				case "*freehttp.ResponseWriter":
-					value[n] = reflect.ValueOf(responseWriter)
+					value[n] = reflect.ValueOf(freehttp.SuperResponseWriter)
 				case "freehttp.Json":
-					value[n] = reflect.ValueOf(request.ReadJson())
+					value[n] = reflect.ValueOf(freehttp.SuperRequest.ReadJson())
 				case "freehttp.ContentType":
-					value[n] = reflect.ValueOf(request.ReadContentType())
+					value[n] = reflect.ValueOf(freehttp.SuperRequest.ReadContentType())
 				case "freehttp.Stream":
-					value[n] = reflect.ValueOf(request.ReadStream())
+					value[n] = reflect.ValueOf(freehttp.SuperRequest.ReadStream())
 				default:
 					this.Error(fmt.Errorf("unsupported in type: %s", inType))
 				}
@@ -77,17 +78,17 @@ func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 				switch reType {
 				case "freehttp.HttpStatus":
-					responseWriter.WriteHeader(content)
+					freehttp.SuperResponseWriter.WriteHeader(content)
 				case "freehttp.ContentType":
-					responseWriter.SetContentType(content)
+					freehttp.SuperResponseWriter.SetContentType(content)
 				case "freehttp.Json":
-					this.Error(responseWriter.WriterJson(content))
+					this.Error(freehttp.SuperResponseWriter.WriterJson(content))
 				case "freehttp.JsonIndent":
-					this.Error(responseWriter.WriterJsonIndent(content))
+					this.Error(freehttp.SuperResponseWriter.WriterJsonIndent(content))
 				case "freehttp.Stream":
-					this.Error(responseWriter.WriterStream(content))
+					this.Error(freehttp.SuperResponseWriter.WriterStream(content))
 				case "freehttp.File":
-					this.Error(responseWriter.WriterFile(content))
+					freehttp.ServeFiles(content)
 				case "error":
 					this.Error(content)
 				default:
@@ -97,6 +98,7 @@ func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if !status {
+		fmt.Println("NotFound...")
 		http.NotFound(w, r)
 	}
 }

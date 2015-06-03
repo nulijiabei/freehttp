@@ -12,8 +12,8 @@ import (
 type Web struct {
 }
 
-func (this *Web) ReadWrite(w *freehttp.ResponseWriter, r *freehttp.Request) {
-	w.ResponseWriter.Write([]byte("print"))
+func (this *Web) ReadWrite(rw *freehttp.FreeHttp) {
+	rw.SuperResponseWriter.ResponseWriter.Write([]byte("print"))
 }
 
 func (this *Web) WriteJson() (freehttp.Json, freehttp.JsonIndent) {
@@ -22,8 +22,8 @@ func (this *Web) WriteJson() (freehttp.Json, freehttp.JsonIndent) {
 	return m, m
 }
 
-func (this *Web) Download() freehttp.File {
-	return "freehttp/README.md"
+func (this *Web) Download(rw *freehttp.FreeHttp) freehttp.File {
+	return "/Users/nljb/MyCore/git/github/freehttp/README.md"
 }
 
 func (this *Web) WriteReturn() freehttp.HttpStatus {
@@ -34,20 +34,16 @@ func (this *Web) WriteStatus() freehttp.ContentType {
 	return "image/jpeg"
 }
 
-func (this *Web) ReadStream(w *freehttp.ResponseWriter, stream freehttp.Stream) error {
+func (this *Web) ReadStream(rw *freehttp.FreeHttp, stream freehttp.Stream) error {
 	// Content-Type ...
-	f, err := os.Open("freehttp/README.md")
+	f, err := os.Open("/Users/nljb/MyCore/git/github/freehttp/README.md")
 	if err != nil {
 		return err
 	}
-	if _, err := io.Copy(w.Writer, bufio.NewReader(f)); err != nil {
+	if _, err := io.Copy(rw.SuperResponseWriter.Writer, bufio.NewReader(f)); err != nil {
 		return err
 	}
 	return nil
-}
-
-func (this *Web) Proxy(r *freehttp.Request) freehttp.Proxy {
-	return r.Request
 }
 
 func (this *Web) WriteBufioStream() freehttp.Stream {
