@@ -53,7 +53,6 @@ func (this *Web) WriteStream() freehttp.Stream {
 func main() {
 
 	s := freehttp.NewServer(func(mname, name string) string {
-
 		return strings.ToLower(fmt.Sprintf("%s.%s", mname, name))
 	})
 	if err := s.Register(new(Web)); err != nil {

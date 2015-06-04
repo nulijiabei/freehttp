@@ -216,7 +216,6 @@ freehttp
 		func main() {
 			s := freehttp.NewServer(
 				func(mname, name string) string {
-					fmt.Println(mname, name)
 					return strings.ToLower(fmt.Sprintf("/%s/%s", mname, name))
 				})
 			if err := s.Register(new(API)); err != nil {
