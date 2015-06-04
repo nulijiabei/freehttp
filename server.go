@@ -18,7 +18,7 @@ type Server struct {
 	methods map[string]reflect.Method
 }
 
-// 创建 Server
+// 创建 Server 其中 def 为路径处理函数 nil 则使用默认
 func NewServer(def func(string, string) string) *Server {
 	server := new(Server)
 	server.methods = make(map[string]reflect.Method)
