@@ -11,6 +11,7 @@ import (
 // Server Json HTTP
 // http://127.0.0.1:8080/MyStructName.MyFuncName
 type Server struct {
+	def     func(string, string) string
 	name    string
 	rcvr    reflect.Value
 	typ     reflect.Type
@@ -18,10 +19,20 @@ type Server struct {
 }
 
 // 创建 Server
-func NewServer() *Server {
+func NewServer(def func(string, string) string) *Server {
 	server := new(Server)
 	server.methods = make(map[string]reflect.Method)
+	if def != nil {
+		server.def = def
+	} else {
+		server.def = _def
+	}
 	return server
+}
+
+// 路径定义
+func _def(mname, name string) string {
+	return strings.ToLower(fmt.Sprintf("%s.%s", mname, name))
 }
 
 // 错误输出
@@ -42,10 +53,9 @@ func (this *Server) Start(port string) error {
 func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	status := false
 	freehttp := NewFreeHttp(w, r)
-	r.URL.Path = strings.ToLower(strings.Split(r.URL.Path, "/")[len(strings.Split(r.URL.Path, "/"))-1])
+	r.URL.Path = strings.ToLower(r.URL.Path)
 	for name, method := range this.methods {
-		def := strings.ToLower(fmt.Sprintf("%s.%s", this.name, name))
-		if def == r.URL.Path {
+		if this.def(this.name, name) == r.URL.Path {
 			status = true
 			value := make([]reflect.Value, method.Type.NumIn())
 			value[0] = this.rcvr

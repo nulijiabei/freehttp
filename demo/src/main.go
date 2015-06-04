@@ -27,7 +27,6 @@ func (this *Web) Download(rw *freehttp.FreeHttp) freehttp.File {
 }
 
 func (this *Web) WriteReturn(w *freehttp.ResponseWriter) freehttp.HttpStatus {
-	r.Request.Body
 	return 404
 }
 
@@ -53,7 +52,10 @@ func (this *Web) WriteStream() freehttp.Stream {
 
 func main() {
 
-	s := freehttp.NewServer()
+	s := freehttp.NewServer(func(mname, name string) string {
+
+		return strings.ToLower(fmt.Sprintf("%s.%s", mname, name))
+	})
 	if err := s.Register(new(Web)); err != nil {
 		fmt.Println(err)
 	}

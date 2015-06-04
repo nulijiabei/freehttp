@@ -125,38 +125,103 @@ freehttp
 		
 ----------------
 
-	// 例
-	package main
+		自定义:
+		
+		freehttp.NewServer(
+			// mname = StructName
+			// name  = FuncName
+			func(mname, name string) string {
+				// return string == r.URL.Path
+				return strings.ToLower(fmt.Sprintf("/%s/%s", mname, name))
+			}
+		)
 
-	import (
-		"fmt"
-		"freehttp" // 导入 freehttp 包
-	)
+----------------
 
-	// 随便定义一个类
-	type Web struct {}
-
-
-	// 随便定义一些方法
-	// http://127.0.0.1:8080/StructName.FuncName
-	func (this *Web) MyFunc(输入类型 + 输入类型 + ...) 输出类型 + 输出类型 + ... {
-		// 使用输入类型 ...
-		// 返回输出类型 ...
-	}
+		// 例
+		package main
 	
-	// 启动
-	func main() {
-
-		// 创建 Server
-		s := server.NewServer()
-
-		// 传入 Web 类
-		if err := s.Register(new(Web)); err != nil {
-			panic(err)
+		import (
+			"fmt"
+			"freehttp" // 导入 freehttp 包
+		)
+	
+		// 随便定义一个类
+		type Web struct {}
+	
+	
+		// 随便定义一些方法
+		// http://127.0.0.1:8080/StructName.FuncName
+		func (this *Web) MyFunc(输入类型 + 输入类型 + ...) 输出类型 + 输出类型 + ... {
+			// 使用输入类型 ...
+			// 返回输出类型 ...
 		}
+		
+		// 启动
+		func main() {
 	
-		// 启动监听端口
-		s.Start(":8080")
+			// 创建 Server
+			s := server.NewServer(nil)
+	
+			// 传入 Web 类
+			if err := s.Register(new(Web)); err != nil {
+				panic(err)
+			}
+		
+			// 启动监听端口
+			s.Start(":8080")
+	
+		}
 
-	}
+-----------------
+
+		案例：
+		
+		package main
+		
+		import (
+			"fmt"
+			"freehttp"
+			"log"
+			"strings"
+		)
+		
+		type API struct {
+		}
+		
+		// ...
+		type Update struct {
+			Version string `json:"version"`
+			Build   string `json:"build"`
+			Url     string `json:"url"`
+		}
+		
+		func (this *API) Update(r *freehttp.Request) freehttp.JsonIndent {
+			// 解析参数
+			r.Request.ParseForm()
+			// 获取参数
+			version := r.Request.FormValue("version")
+			build := r.Request.FormValue("build")
+			// 输出
+			log.Printf("update request form version(%s) build(%s)", version, build)
+			// update
+			up := new(Update)
+			up.Version = "1.0.10"
+			up.Build = "10"
+			up.Url = "www.baidu.com"
+			// 返回
+			return freehttp.JsonIndent(up)
+		}
+		
+		func main() {
+			s := freehttp.NewServer(
+				func(mname, name string) string {
+					fmt.Println(mname, name)
+					return strings.ToLower(fmt.Sprintf("/%s/%s", mname, name))
+				})
+			if err := s.Register(new(API)); err != nil {
+				fmt.Println(err)
+			}
+			s.Start(":9090")
+		}
 

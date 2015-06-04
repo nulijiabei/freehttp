@@ -5,10 +5,10 @@ import (
 )
 
 // Json
-type Json map[string]interface{}
+type Json interface{}
 
 // Json Indent
-type JsonIndent map[string]interface{}
+type JsonIndent interface{}
 
 // HTTP-Status
 type HttpStatus int

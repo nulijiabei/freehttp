@@ -29,7 +29,7 @@ func (this *ResponseWriter) WriteHeader(content interface{}) {
 
 // 转 Json 并回写
 func (this *ResponseWriter) WriterJson(content interface{}) error {
-	data, err := json.Marshal(map[string]interface{}(content.(Json)))
+	data, err := json.Marshal(content.(Json))
 	if err != nil {
 		return err
 	}
@@ -39,7 +39,7 @@ func (this *ResponseWriter) WriterJson(content interface{}) error {
 
 // 转 Json 并回写（排版）
 func (this *ResponseWriter) WriterJsonIndent(content interface{}) error {
-	data, err := json.MarshalIndent(map[string]interface{}(content.(JsonIndent)), "", "  ")
+	data, err := json.MarshalIndent((content.(JsonIndent)), "", "  ")
 	if err != nil {
 		return err
 	}
