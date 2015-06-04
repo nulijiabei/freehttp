@@ -9,7 +9,7 @@ import (
 )
 
 // Server Json HTTP
-// http://127.0.0.1:8080/MyStructName.MyFuncName
+// http://127.0.0.1:8080/MyStructName/MyFuncName
 type Server struct {
 	def     func(string, string) string
 	name    string
@@ -32,11 +32,11 @@ func NewServer(def func(string, string) string) *Server {
 
 // 路径定义
 func _def(mname, name string) string {
-	return strings.ToLower(fmt.Sprintf("%s.%s", mname, name))
+	return strings.ToLower(fmt.Sprintf("%s/%s", mname, name))
 }
 
 // 错误输出
-func (this *Server) Error(err interface{}) {
+func (this *Server) error(err interface{}) {
 	if err != nil {
 		fmt.Println("server exception:", err.(error).Error())
 	}
@@ -75,7 +75,7 @@ func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				case "freehttp.Stream":
 					value[n] = reflect.ValueOf(freehttp.SuperRequest.ReadStream())
 				default:
-					this.Error(fmt.Errorf("unsupported in type: %s", inType))
+					this.error(fmt.Errorf("unsupported in type: %s", inType))
 				}
 			}
 			returnValues := method.Func.Call(value)
@@ -83,7 +83,7 @@ func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				reType := method.Type.Out(t).String()
 				content := returnValues[t].Interface()
 				if content == nil && reType != "error" {
-					this.Error(fmt.Errorf("%s out value is null -> %s", name, reType))
+					this.error(fmt.Errorf("%s out value is null -> %s", name, reType))
 					continue
 				}
 				switch reType {
@@ -92,17 +92,17 @@ func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				case "freehttp.ContentType":
 					freehttp.SuperResponseWriter.SetContentType(content)
 				case "freehttp.Json":
-					this.Error(freehttp.SuperResponseWriter.WriterJson(content))
+					this.error(freehttp.SuperResponseWriter.WriterJson(content))
 				case "freehttp.JsonIndent":
-					this.Error(freehttp.SuperResponseWriter.WriterJsonIndent(content))
+					this.error(freehttp.SuperResponseWriter.WriterJsonIndent(content))
 				case "freehttp.Stream":
-					this.Error(freehttp.SuperResponseWriter.WriterStream(content))
+					this.error(freehttp.SuperResponseWriter.WriterStream(content))
 				case "freehttp.File":
 					freehttp.ServeFiles(content)
 				case "error":
-					this.Error(content)
+					this.error(content)
 				default:
-					this.Error(fmt.Errorf("unsupported out type: %s", reType))
+					this.error(fmt.Errorf("unsupported out type: %s", reType))
 				}
 			}
 		}

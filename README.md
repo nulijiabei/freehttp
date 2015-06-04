@@ -151,7 +151,7 @@ freehttp
 	
 	
 		// 随便定义一些方法
-		// http://127.0.0.1:8080/StructName.FuncName
+		// http://127.0.0.1:8080/StructName/FuncName
 		func (this *Web) MyFunc(输入类型 + 输入类型 + ...) 输出类型 + 输出类型 + ... {
 			// 使用输入类型 ...
 			// 返回输出类型 ...
