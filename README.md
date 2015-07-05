@@ -15,6 +15,24 @@ freehttp
 	
 ----------------
 
+	配置文件:
+
+		// -------------- //
+		[root]
+		path=/root/...
+		size=1024
+		...
+		// -------------- //
+
+		// 配置文件要求为INI格式
+		ini := freehttp.NewINI("/Users/nljb/profile")
+		ini.Show()
+		ini.Set("default", "freehttp", "initalize")
+		ini.Del("default", "freehttp")
+		ini.Save()
+
+----------------
+
 	核心：
 	
 		// FreeHttp
