@@ -12,6 +12,14 @@ import (
 type Web struct {
 }
 
+func (this *Web) RradConf(conf *freehttp.INI) {
+	conf.Show()
+	conf.Set("default", "freehttp", "initalize")
+	conf.GetString("default.freehttp", "default value")
+	conf.Del("default", "freehttp")
+	conf.Save()
+}
+
 func (this *Web) ReadWrite(rw *freehttp.FreeHttp) {
 	rw.SuperResponseWriter.ResponseWriter.Write([]byte("print"))
 }
@@ -52,20 +60,25 @@ func (this *Web) WriteStream() freehttp.Stream {
 
 func main() {
 
-	ini := freehttp.NewINI("/Users/nljb/profile")
-	ini.Show()
-	ini.Set("default", "freehttp", "initalize")
-	ini.GetString("default.freehttp", "default value")
-	ini.Del("default", "freehttp")
-	ini.Save()
+	ss := freehttp.NewServer()
 
-	s := freehttp.NewServer(func(mname, name string) string {
-		return strings.ToLower(fmt.Sprintf("%s.%s", mname, name))
-	})
-	if err := s.Register(new(Web)); err != nil {
-		fmt.Println(err)
+	// mname = StructName
+	// name  = FuncName
+	def := func(mname, name string) string {
+		// return string == r.URL.Path
+		return strings.ToLower(fmt.Sprintf("/%s/%s", mname, name))
 	}
 
-	s.Start(":8080")
+	ss.InitURLPath(def)
+
+	ss.InitConfig("/Users/nljb/profile")
+
+	if err := ss.Register(new(Web)); err != nil {
+		panic(err)
+	}
+
+	if err := ss.Start(":8080"); err != nil {
+		panic(err)
+	}
 
 }

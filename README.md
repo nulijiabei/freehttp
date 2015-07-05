@@ -13,24 +13,6 @@ freehttp
 
 	go get github.com/nulijiabei/freehttp
 	
-----------------
-
-	配置文件:
-
-		// -------------- //
-		[root]
-		path=/root/...
-		size=1024
-		...
-		// -------------- //
-
-		// 配置文件要求为INI格式
-		ini := freehttp.NewINI("/Users/nljb/profile")
-		ini.Show()
-		ini.Set("default", "freehttp", "initalize")
-		ini.GetString("default.freehttp", "default value")
-		ini.Del("default", "freehttp")
-		ini.Save()
 
 ----------------
 
@@ -52,6 +34,25 @@ freehttp
 	
 		freehttp.Request.*			基于对 http.Request        的自定义帮助方法
 		freehttp.ResponseWriter.*	基于对 http.ResponseWriter 的自定义帮助方法
+		
+	核心配置类型
+	
+		// 类型
+		freehttp.INI 
+		
+		// 初始化配置文件（INI格式）
+		ss := freehttp.NewServer()
+		ss.InitConfig("/profile")
+		...
+		
+		// 例如
+		func (this *Struct) MyFunc(conf *freehttp.INI) {
+			conf.Show()
+			conf.Set("default", "freehttp", "initalize")
+			conf.GetString("default.freehttp", "default value")
+			conf.Del("default", "freehttp")
+			conf.Save()
+		}
 		
 	核心输入类型:
 	
@@ -144,16 +145,18 @@ freehttp
 		
 ----------------
 
-		自定义:
+		自定义URL路径:
 		
-		freehttp.NewServer(
 			// mname = StructName
 			// name  = FuncName
-			func(mname, name string) string {
+			def := func(mname, name string) string {
 				// return string == r.URL.Path
 				return strings.ToLower(fmt.Sprintf("/%s/%s", mname, name))
 			}
-		)
+		
+			ss := freehttp.NewServer()
+			ss.InitURLPath(def)
+			...
 
 ----------------
 
@@ -179,16 +182,25 @@ freehttp
 		// 启动
 		func main() {
 	
-			// 创建 Server
-			s := server.NewServer(nil)
-	
-			// 传入 Web 类
-			if err := s.Register(new(Web)); err != nil {
+			ss := freehttp.NewServer()
+		
+			// mname = StructName
+			// name  = FuncName
+			def := func(mname, name string) string {
+				// return string == r.URL.Path
+				return strings.ToLower(fmt.Sprintf("/%s/%s", mname, name))
+			}
+		
+			ss.InitURLPath(def)
+			ss.InitConfig("/profile")
+		
+			if err := ss.Register(new(Web)); err != nil {
 				panic(err)
 			}
 		
-			// 启动监听端口
-			s.Start(":8080")
+			if err := ss.Start(":8080"); err != nil {
+				panic(err)
+			}
 	
 		}
 

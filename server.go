@@ -11,6 +11,7 @@ import (
 // Server Json HTTP
 // http://127.0.0.1:8080/MyStructName/MyFuncName
 type Server struct {
+	conf    *INI
 	def     func(string, string) string
 	name    string
 	rcvr    reflect.Value
@@ -19,20 +20,24 @@ type Server struct {
 }
 
 // 创建 Server 其中 def 为路径处理函数 nil 则使用默认
-func NewServer(def func(string, string) string) *Server {
+func NewServer() *Server {
 	server := new(Server)
 	server.methods = make(map[string]reflect.Method)
-	if def != nil {
-		server.def = def
-	} else {
-		server.def = _def
+	// 默认URL处理函数
+	server.def = func(mname, name string) string {
+		return strings.ToLower(fmt.Sprintf("/%s/%s", mname, name))
 	}
 	return server
 }
 
-// 路径定义
-func _def(mname, name string) string {
-	return strings.ToLower(fmt.Sprintf("%s/%s", mname, name))
+// 初始化URL处理函数
+func (this *Server) InitURLPath(def func(string, string) string) {
+	this.def = def
+}
+
+// 初始化配置文件
+func (this *Server) InitConfig(path string) {
+	this.conf = NewINI(path)
 }
 
 // 错误输出
@@ -68,6 +73,8 @@ func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					value[n] = reflect.ValueOf(freehttp.SuperRequest)
 				case "*freehttp.ResponseWriter":
 					value[n] = reflect.ValueOf(freehttp.SuperResponseWriter)
+				case "*freehttp.INI":
+					value[n] = reflect.ValueOf(this.conf)
 				case "freehttp.Json":
 					value[n] = reflect.ValueOf(freehttp.SuperRequest.ReadJson())
 				case "freehttp.ContentType":
