@@ -57,6 +57,7 @@ freehttp
 		}
 		
 		// 说明：未初始化配置文件的情况下使用*freehttp.INI参数会造成错误
+		// Use a non-initialized type: *freehttp.INI
 		
 	核心输入类型:
 	
