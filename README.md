@@ -28,6 +28,7 @@ freehttp
 		ini := freehttp.NewINI("/Users/nljb/profile")
 		ini.Show()
 		ini.Set("default", "freehttp", "initalize")
+		ini.GetString("default.freehttp", "default value")
 		ini.Del("default", "freehttp")
 		ini.Save()
 
