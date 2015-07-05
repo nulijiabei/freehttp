@@ -70,8 +70,7 @@ func main() {
 	}
 
 	ss.InitURLPath(def)
-
-	ss.InitConfig("/Users/nljb/profile")
+	//ss.InitConfig("/Users/nljb/profile")
 
 	if err := ss.Register(new(Web)); err != nil {
 		panic(err)
