@@ -52,6 +52,12 @@ func (this *Web) WriteStream() freehttp.Stream {
 
 func main() {
 
+	ini := freehttp.NewINI("/Users/nljb/profile")
+	ini.Show()
+	ini.Set("default", "freehttp", "initalize")
+	ini.Del("default", "freehttp")
+	ini.Save()
+
 	s := freehttp.NewServer(func(mname, name string) string {
 		return strings.ToLower(fmt.Sprintf("%s.%s", mname, name))
 	})
