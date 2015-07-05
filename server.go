@@ -74,6 +74,9 @@ func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				case "*freehttp.ResponseWriter":
 					value[n] = reflect.ValueOf(freehttp.SuperResponseWriter)
 				case "*freehttp.INI":
+					if this.conf == nil {
+						panic(fmt.Sprintf("Use a non-initialized type: %s", inType))
+					}
 					value[n] = reflect.ValueOf(this.conf)
 				case "freehttp.Json":
 					value[n] = reflect.ValueOf(freehttp.SuperRequest.ReadJson())

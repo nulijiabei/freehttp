@@ -57,7 +57,6 @@ freehttp
 		}
 		
 		// 说明：未初始化配置文件的情况下使用*freehttp.INI参数会造成错误
-		// invalid memory address or nil pointer dereference
 		
 	核心输入类型:
 	
