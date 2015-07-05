@@ -162,6 +162,9 @@ freehttp
 			ss := freehttp.NewServer()
 			ss.InitURLPath(def)
 			...
+			
+			// 说明：在未初始化自定义URL路径的情况下，系统使用默认路径
+			// return strings.ToLower(fmt.Sprintf("/%s/%s", mname, name))
 
 ----------------
 
