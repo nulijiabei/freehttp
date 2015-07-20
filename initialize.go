@@ -97,7 +97,7 @@ func (this *INI) Show() {
 			content += fmt.Sprintf("%s=%s\n", kk, vv)
 		}
 	}
-	fmt.Printf("--- profile(%s) ---\n%s--- profile end ---\n", this.path, content)
+	fmt.Printf("--- profile(%s) ---\n%s-------------------\n", this.path, content)
 }
 
 // 将当前配置保存到配置文件内

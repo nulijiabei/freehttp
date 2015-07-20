@@ -109,6 +109,8 @@ func (this *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					this.error(freehttp.SuperResponseWriter.WriterStream(content))
 				case "freehttp.File":
 					freehttp.ServeFiles(content)
+				case "freehttp.Redirect":
+					freehttp.Redirect(this.name, content, this.def)
 				case "error":
 					this.error(content)
 				default:

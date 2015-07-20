@@ -146,6 +146,17 @@ freehttp
 		func (this *Struct) MyFunc() freehttp.File {
 			return ".../freehttp/README.md"
 		}
+		
+		// Redirect	
+		freehttp.Redirect		原型 -> strings
+		
+		// 例如
+		func (this *Struct) MyFunc() freehttp.Redirect {
+			// 重定向到内部路径 -> 使用":"开头+内部函数
+			return ":ReadWrite"
+			// 重定向到外部路径
+			return "http://www.baidu.com"
+		}
 
 		
 ----------------

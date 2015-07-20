@@ -12,6 +12,7 @@ import (
 type Web struct {
 }
 
+/*
 func (this *Web) RradConf(conf *freehttp.INI) {
 	conf.Show()
 	conf.Set("default", "freehttp", "initalize")
@@ -19,8 +20,15 @@ func (this *Web) RradConf(conf *freehttp.INI) {
 	conf.Del("default", "freehttp")
 	conf.Save()
 }
+*/
+
+func (this *Web) Redirect() freehttp.Redirect {
+	return ":ReadWrite"
+}
 
 func (this *Web) ReadWrite(rw *freehttp.FreeHttp) {
+	rw.SuperRequest.Request.ParseForm()
+	fmt.Println("->", rw.SuperRequest.Request.FormValue("val"))
 	rw.SuperResponseWriter.ResponseWriter.Write([]byte("print"))
 }
 
@@ -70,7 +78,10 @@ func main() {
 	}
 
 	ss.InitURLPath(def)
-	//ss.InitConfig("/Users/nljb/profile")
+
+	/*
+		ss.InitConfig("/Users/nljb/profile")
+	*/
 
 	if err := ss.Register(new(Web)); err != nil {
 		panic(err)

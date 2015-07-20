@@ -22,3 +22,12 @@ func NewFreeHttp(w http.ResponseWriter, r *http.Request) *FreeHttp {
 func (this *FreeHttp) ServeFiles(content interface{}) {
 	http.ServeFile(this.SuperResponseWriter.ResponseWriter, this.SuperRequest.Request, string(content.(File)))
 }
+
+// Redirect
+func (this *FreeHttp) Redirect(name string, content interface{}, def func(string, string) string) {
+	url := string(content.(Redirect))
+	if url[0] == ':' {
+		url = def(name, url[1:])
+	}
+	http.Redirect(this.SuperResponseWriter.ResponseWriter, this.SuperRequest.Request, url, http.StatusFound)
+}

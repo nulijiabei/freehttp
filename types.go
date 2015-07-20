@@ -21,3 +21,6 @@ type Stream *bufio.Reader
 
 // File
 type File string
+
+// Redirect
+type Redirect string
