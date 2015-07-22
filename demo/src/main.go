@@ -23,7 +23,7 @@ func (this *Web) RradConf(conf *freehttp.INI) {
 */
 
 func (this *Web) Redirect() freehttp.Redirect {
-	return ":ReadWrite"
+	return "http://www.baidu.com"
 }
 
 func (this *Web) ReadWrite(rw *freehttp.FreeHttp) {
@@ -68,26 +68,14 @@ func (this *Web) WriteStream() freehttp.Stream {
 
 func main() {
 
-	ss := freehttp.NewServer()
+	server := freehttp.NewServer()
+	server.Default(new(Web))
+	// service := server.Default(new(Web))
+	// service.InitConfig("/profile")
+	// server.Append(...)
 
-	// mname = StructName
-	// name  = FuncName
-	def := func(mname, name string) string {
-		// return string == r.URL.Path
-		return strings.ToLower(fmt.Sprintf("/%s/%s", mname, name))
-	}
-
-	ss.InitURLPath(def)
-
-	/*
-		ss.InitConfig("/Users/nljb/profile")
-	*/
-
-	if err := ss.Register(new(Web)); err != nil {
-		panic(err)
-	}
-
-	if err := ss.Start(":8080"); err != nil {
+	// 启动服务器
+	if err := server.Start(":8080"); err != nil {
 		panic(err)
 	}
 

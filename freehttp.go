@@ -1,5 +1,12 @@
 package freehttp
 
+/*
+	说明：
+		同时使用到ResponseWriter和Request的在FreeHttp下进行封装
+		只使用到Request的封装到SuperRequest中
+		只使用到ResponseWriter的封装到SuperResponseWriter中
+*/
+
 import (
 	"net/http"
 )
@@ -24,10 +31,6 @@ func (this *FreeHttp) ServeFiles(content interface{}) {
 }
 
 // Redirect
-func (this *FreeHttp) Redirect(name string, content interface{}, def func(string, string) string) {
-	url := string(content.(Redirect))
-	if url[0] == ':' {
-		url = def(name, url[1:])
-	}
-	http.Redirect(this.SuperResponseWriter.ResponseWriter, this.SuperRequest.Request, url, http.StatusFound)
+func (this *FreeHttp) Redirect(content interface{}) {
+	http.Redirect(this.SuperResponseWriter.ResponseWriter, this.SuperRequest.Request, string(content.(Redirect)), http.StatusFound)
 }

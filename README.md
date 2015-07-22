@@ -16,9 +16,30 @@ freehttp
 
 ----------------
 
-使用方法
+使用方法 - 1
 
-	核心：
+	核心服务类型：
+	
+		支持向 server 添加多个 handler 服务
+		
+		访问路径 http://127.0.0.1/服务类名/自定义ServeHTTP
+	
+		// 创建一个 server
+		server := freehttp.NewServer()
+		
+		// 可以通过 Append 添加多个 Handler 接口的实现
+		server.Append(handler)
+		
+		// 启动 server 服务
+		if err := server.Start(":8080"); err != nil {
+			panic(err)
+		}
+	
+----------------	
+
+使用方法 - 2
+
+	核心默认服务：
 	
 		// FreeHttp
 		freehttp.FreeHttp
@@ -43,8 +64,9 @@ freehttp
 		freehttp.INI 
 		
 		// 初始化配置文件（INI格式）
-		ss := freehttp.NewServer()
-		ss.InitConfig("/profile")
+		server := freehttp.NewServer()
+		service := server.Default(new(Web))
+		service.InitConfig("/profile")
 		...
 		
 		// 例如
@@ -152,34 +174,13 @@ freehttp
 		
 		// 例如
 		func (this *Struct) MyFunc() freehttp.Redirect {
-			// 重定向到内部路径 -> 使用":"开头+内部函数
-			return ":ReadWrite"
-			// 重定向到外部路径
 			return "http://www.baidu.com"
 		}
 
 		
 ----------------
 
-		自定义URL路径:
-		
-			// mname = StructName
-			// name  = FuncName
-			def := func(mname, name string) string {
-				// return string == r.URL.Path
-				return strings.ToLower(fmt.Sprintf("/%s/%s", mname, name))
-			}
-		
-			ss := freehttp.NewServer()
-			ss.InitURLPath(def)
-			...
-			
-			// 说明：在未初始化自定义URL路径的情况下，系统使用默认路径
-			// return strings.ToLower(fmt.Sprintf("/%s/%s", mname, name))
-
-----------------
-
-		// 例不会随着代码的更新而更新，具体使用方法请根据使用方法
+		// 本例会随着程序版本的更新而更新
 
 		// 例
 		package main
@@ -203,23 +204,20 @@ freehttp
 		// 启动
 		func main() {
 	
-			ss := freehttp.NewServer()
-		
-			// mname = StructName
-			// name  = FuncName
-			def := func(mname, name string) string {
-				// return string == r.URL.Path
-				return strings.ToLower(fmt.Sprintf("/%s/%s", mname, name))
-			}
-		
-			ss.InitURLPath(def)
-			ss.InitConfig("/profile")
-		
-			if err := ss.Register(new(Web)); err != nil {
-				panic(err)
-			}
-		
-			if err := ss.Start(":8080"); err != nil {
+			// 创建一个 server
+			server := freehttp.NewServer()
+			
+			// 通过 server 创建默认 service
+			service := server.Default(new(Web))
+			
+			// 可以通过 Append 添加多个 Handler 接口的实现
+			server.Append(handler)
+			
+			// 通过 service 设置配置文件
+			service.Config("/profile")
+			
+			// 启动 server 服务
+			if err := server.Start(":8080"); err != nil {
 				panic(err)
 			}
 	
