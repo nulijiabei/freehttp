@@ -10,8 +10,7 @@ import (
 // Server Json HTTP
 // http://127.0.0.1:8080/MyStructName/MyFuncName
 type Service struct {
-	conf *INI
-	// def     func(string, string) string
+	conf    *INI
 	name    string
 	rcvr    reflect.Value
 	typ     reflect.Type

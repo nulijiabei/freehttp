@@ -66,7 +66,7 @@ freehttp
 		// 初始化配置文件（INI格式）
 		server := freehttp.NewServer()
 		service := server.Default(new(Web))
-		service.InitConfig("/profile")
+		service.Config("/profile")
 		...
 		
 		// 例如
