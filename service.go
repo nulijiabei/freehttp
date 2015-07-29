@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"reflect"
+	"runtime"
 	"strings"
 )
 
@@ -18,10 +19,20 @@ type Service struct {
 }
 
 // 创建 Server 其中 def 为路径处理函数 nil 则使用默认
-func NewService() *Service {
+func NewService(rcvr interface{}) *Service {
 	service := new(Service)
 	service.methods = make(map[string]reflect.Method)
+	if err := service.Register(rcvr); err != nil {
+		panic(err)
+	}
 	return service
+}
+
+// 启动服务
+func (this *Service) Start(port string) error {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	// ListenAndServe(addr string, handler Handler)
+	return http.ListenAndServe(port, this)
 }
 
 // 将类及方法注册到FreeHttp

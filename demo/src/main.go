@@ -68,14 +68,11 @@ func (this *Web) WriteStream() freehttp.Stream {
 
 func main() {
 
-	server := freehttp.NewServer()
-	server.Default(new(Web))
-	// service := server.Default(new(Web))
-	// service.InitConfig("/profile")
-	// server.Append(...)
+	service := freehttp.NewService(new(Web))
+	// service.Config("/profile")
 
 	// 启动服务器
-	if err := server.Start(":8080"); err != nil {
+	if err := service.Start(":8080"); err != nil {
 		panic(err)
 	}
 
