@@ -50,6 +50,18 @@ func (this *Web) WriteStatus() freehttp.ContentType {
 	return "image/jpeg"
 }
 
+func (this *Web) ReadJson(json *freehttp.Json) {
+	if json == nil {
+		fmt.Println("hahaha")
+	}
+}
+
+func (this *Web) ReadConfig(conf *freehttp.INI) {
+	if conf == nil {
+		fmt.Println("hahaha")
+	}
+}
+
 func (this *Web) ReadStream(rw *freehttp.FreeHttp, stream freehttp.Stream) error {
 	// Content-Type ...
 	f, err := os.Open("/Users/nljb/MyCore/git/github/freehttp/README.md")

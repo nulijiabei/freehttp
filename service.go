@@ -57,10 +57,10 @@ func (this *Service) Config(path string) {
 	this.conf = NewINI(path)
 }
 
-// 错误输出
-func (this *Service) error(err interface{}) {
+// 检查错误返回
+func (this *Service) CheckError(err interface{}, name string) {
 	if err != nil {
-		fmt.Println("service exception:", err.(error).Error())
+		fmt.Errorf("%s exception -> %s", name, err.(error).Error())
 	}
 }
 
@@ -77,6 +77,10 @@ func (this *Service) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			value[0] = this.rcvr
 			for n := 1; n < method.Type.NumIn(); n++ {
 				inType := method.Type.In(n).String()
+				/*
+					传入输入参数时如果类型为指针时可以为空
+					传入输入参数时如果类型非指针不可以为空
+				*/
 				switch inType {
 				case "*freehttp.FreeHttp":
 					value[n] = reflect.ValueOf(freehttp)
@@ -85,9 +89,7 @@ func (this *Service) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				case "*freehttp.ResponseWriter":
 					value[n] = reflect.ValueOf(freehttp.SuperResponseWriter)
 				case "*freehttp.INI":
-					if this.conf == nil {
-						panic(fmt.Sprintf("Use a non-initialized type: %s", inType))
-					}
+					// panic(fmt.Sprintf("Use a non-initialized type: %s", inType))
 					value[n] = reflect.ValueOf(this.conf)
 				case "freehttp.Json":
 					value[n] = reflect.ValueOf(freehttp.SuperRequest.ReadJson())
@@ -96,7 +98,7 @@ func (this *Service) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				case "freehttp.Stream":
 					value[n] = reflect.ValueOf(freehttp.SuperRequest.ReadStream())
 				default:
-					this.error(fmt.Errorf("unsupported in type: %s", inType))
+					fmt.Printf("unsupported in type: %s\n", inType)
 				}
 			}
 			returnValues := method.Func.Call(value)
@@ -104,28 +106,34 @@ func (this *Service) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				reType := method.Type.Out(t).String()
 				content := returnValues[t].Interface()
 				if content == nil && reType != "error" {
-					this.error(fmt.Errorf("%s out value is null -> %s", name, reType))
+					fmt.Printf("%s out value is null -> %s\n", name, reType)
 					continue
 				}
+				/*
+					输出参数其返回值只能为Error且需要手动捕捉输出
+				*/
 				switch reType {
 				case "freehttp.HttpStatus":
 					freehttp.SuperResponseWriter.WriteHeader(content)
 				case "freehttp.ContentType":
 					freehttp.SuperResponseWriter.SetContentType(content)
 				case "freehttp.Json":
-					this.error(freehttp.SuperResponseWriter.WriterJson(content))
+					err := freehttp.SuperResponseWriter.WriterJson(content)
+					this.CheckError(err, name)
 				case "freehttp.JsonIndent":
-					this.error(freehttp.SuperResponseWriter.WriterJsonIndent(content))
+					err := freehttp.SuperResponseWriter.WriterJsonIndent(content)
+					this.CheckError(err, name)
 				case "freehttp.Stream":
-					this.error(freehttp.SuperResponseWriter.WriterStream(content))
+					err := freehttp.SuperResponseWriter.WriterStream(content)
+					this.CheckError(err, name)
 				case "freehttp.File":
 					freehttp.ServeFiles(content)
 				case "freehttp.Redirect":
 					freehttp.Redirect(content)
 				case "error":
-					this.error(content)
+					this.CheckError(content, name)
 				default:
-					this.error(fmt.Errorf("unsupported out type: %s", reType))
+					fmt.Printf("unsupported out type: %s\n", reType)
 				}
 			}
 		}

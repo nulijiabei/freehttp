@@ -14,7 +14,7 @@ import (
 type INI struct {
 	path string
 	conf map[string]string
-	lock *sync.Mutex
+	lock *sync.RWMutex
 }
 
 // New INI
@@ -22,7 +22,7 @@ func NewINI(path string) *INI {
 	ini := new(INI)
 	ini.path = path
 	ini.conf = make(map[string]string)
-	ini.lock = new(sync.Mutex)
+	ini.lock = new(sync.RWMutex)
 	err := ini.load()
 	if err != nil {
 		panic(err)
@@ -78,8 +78,8 @@ func (this *INI) Del(group, key string) {
 
 // 查看配置内容
 func (this *INI) Show() {
-	this.lock.Lock()
-	defer this.lock.Unlock()
+	this.lock.RLock()
+	defer this.lock.RUnlock()
 	data := make(map[string]map[string]string)
 	for k, v := range this.conf {
 		arr := strings.Split(k, ".")
@@ -97,7 +97,7 @@ func (this *INI) Show() {
 			content += fmt.Sprintf("%s=%s\n", kk, vv)
 		}
 	}
-	fmt.Printf("--- profile(%s) ---\n%s-------------------\n", this.path, content)
+	fmt.Printf("\n", this.path, content)
 }
 
 // 将当前配置保存到配置文件内
@@ -128,8 +128,8 @@ func (this *INI) Save() error {
 // key(root.system)
 // def = default 失败则返回
 func (this *INI) GetString(key, def string) string {
-	this.lock.Lock()
-	defer this.lock.Unlock()
+	this.lock.RLock()
+	defer this.lock.RUnlock()
 	val, ok := this.conf[key]
 	if ok {
 		return val
