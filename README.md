@@ -23,19 +23,19 @@ freehttp
 		// FreeHttp
 		freehttp.FreeHttp
 		
-			SuperResponseWriter 	*freehttp.ResponseWriter
-			SuperRequest        	*freehttp.Request
+			SuperResponseWriter 		*freehttp.ResponseWriter
+			SuperRequest        		*freehttp.Request
 		
 			freehttp.Request		封装于	http.Request
 			freehttp.Reader			封装于	http.Request.Body -> bufio.NewReader(Body)
 				
-			freehttp.ResponseWriter	封装于	http.ResponseWriter
+			freehttp.ResponseWriter		封装于	http.ResponseWriter
 			freehttp.Writer			封装于	http.ResponseWriter.Body -> bufio.NewWriter(Body)
 
 	衍生帮助方法:
 	
 		freehttp.Request.*			基于对 http.Request        的自定义帮助方法
-		freehttp.ResponseWriter.*	基于对 http.ResponseWriter 的自定义帮助方法
+		freehttp.ResponseWriter.*		基于对 http.ResponseWriter 的自定义帮助方法
 		
 	核心配置类型
 	
@@ -124,7 +124,7 @@ freehttp
 		}
 		
 		// Content-Type
-		freehttp.ContentType	原型 ->	string
+		freehttp.ContentType		原型 ->	string
 		
 		// 例如
 		func (this *Struct) MyFunc() freehttp.ContentType {
