@@ -3,10 +3,11 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"freehttp"
 	"io"
 	"os"
 	"strings"
+
+	"../../../freehttp"
 )
 
 type Web struct {

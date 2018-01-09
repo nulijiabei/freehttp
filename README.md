@@ -236,13 +236,10 @@ freehttp
 		}
 		
 		func main() {
-			s := freehttp.NewServer(
-				func(mname, name string) string {
-					return strings.ToLower(fmt.Sprintf("/%s/%s", mname, name))
-				})
-			if err := s.Register(new(API)); err != nil {
-				fmt.Println(err)
+			service := freehttp.NewService(new(API))
+			// service.Config("/profile")
+			if err := service.Start(":8080"); err != nil {
+				panic(err)
 			}
-			s.Start(":9090")
 		}
 
