@@ -40,7 +40,7 @@ func (this *Web) WriteJson() (freehttp.Json, freehttp.JsonIndent) {
 }
 
 func (this *Web) Download(rw *freehttp.FreeHttp) freehttp.File {
-	return "/Users/nljb/MyCore/git/github/freehttp/README.md"
+	return "E:\\MyCore\\git\\github\\freehttp\\README.md"
 }
 
 func (this *Web) WriteReturn(w *freehttp.ResponseWriter) freehttp.HttpStatus {
