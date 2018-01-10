@@ -3,17 +3,14 @@ freehttp
 
 <a href="https://godoc.org/github.com/nulijiabei/freehttp"><img src="https://godoc.org/github.com/nulijiabei/freehttp?status.svg" alt="GoDoc"></a>
 
-一个快速将类和子方法转换成HTTP接口
+一个快速将类和子方法转换成http接口，并且通过反射为http接口封装更多人性化的帮助方法 ... 
 
 http://127.0.0.1:8080/MyStructName/MyFuncName
 
-主要是对net/http的一个反射封装，通过几行简短代码即可实现复杂功能，再也不需要每个功能点一一实现 ...
+----------------
 
-(标记类型）通过反射获取自定义类型来判断用户目的，一行代码完成反锁操作。
-
-比如：return "/a/b/c.jpg" -> string 	你永远不知道用户目的。
-
-这样：return "/a/b/c.jpg" -> File 	这样用户目的一目了然。
+* 将类和子方法转换成以MyStructName/MyFuncName的URL访问地址 ...
+* 将子方法输入与输出参数通过反射封装标记类型提供人性化帮助方法 ...
 
 ----------------
 
@@ -26,13 +23,13 @@ http://127.0.0.1:8080/MyStructName/MyFuncName
 
   输入/输出 | 标记类型  | 类型原型 | 类型还原 | 类型说明
   ------------- | ------------- | ------------- | ------------- | ------------- 
- 输出 | Json | interface{}  | Func JsonType(v) | 
- 输出 | JsonIndent | interface{}  | Func JsonIndentType(v) | a
- 输出 | HttpStatus | int  | Func HttpStatusType(v) | a
- 输出 | ContentType | string  | Func ContentTypeType(v)  | a
- 输入/输出 | Stream | *bufio.Reader  | Func StreamType(v) | a
- 输出 | File | string  | Func FileType(v)  | a
- 输出 | Redirect | string  | Func RedirectTyoe(v)  | a
+ 输出 | freehttp.Json | interface{}  |  freehttp.JsonType(v) | 
+ 输出 | freehttp.JsonIndent | interface{}  |  freehttp.JsonIndentType(v) | 
+ 输出 | freehttp.HttpStatus | int  | freehttp.HttpStatusType(v) |
+ 输出 | freehttp.ContentType | string  | freehttp.ContentTypeType(v)  | 
+ 输入/输出 | freehttp.Stream | *bufio.Reader  | freehttp.StreamType(v) | 
+ 输出 | freehttp.File | string  | freehttp.FileType(v)  | 
+ 输出 | freehttp.Redirect | string  | freehttp.RedirectTyoe(v)  | 
 
 ----------------
 
