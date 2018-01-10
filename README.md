@@ -96,7 +96,7 @@ freehttp
 	衍生输入类型:
 		
 		// Bufio.Reader
-		freehttp.Stream			原型 ->	*bufio.Reader		还原 -> StreamType(v)
+		freehttp.Stream		原型 -> *bufio.Reader		还原 -> StreamType(v)
 		
 		// 例如
 		func (this *Struct) MyFunc(stream freehttp.Stream) {
@@ -109,10 +109,10 @@ freehttp
 	衍生输出类型:
 		
 		// Json 普通格式
-		freehttp.Json			原型 ->	map[string]interface{}	 
+		freehttp.Json			原型 -> map[string]interface{}	 
 		
 		// Json 排版格式
-		freehttp.JsonIndent		原型 ->	map[string]interface{}
+		freehttp.JsonIndent		原型 -> map[string]interface{}
 
 		// 例如
 		func (this *Struct) MyFunc() (freehttp.Json, freehttp.JsonIndent) {
@@ -122,7 +122,7 @@ freehttp
 		}
 			
 		// HTTP Status
-		freehttp.HttpStatus		原型 ->	int		还原 -> HttpStatusType(v)
+		freehttp.HttpStatus		原型 -> int		还原 -> HttpStatusType(v)
 		
 		// 例如
 		func (this *Struct) MyFunc() freehttp.HttpStatus {
@@ -130,7 +130,7 @@ freehttp
 		}
 		
 		// Content-Type
-		freehttp.ContentType		原型 ->	string		还原 -> 	ContentTypeType(v)
+		freehttp.ContentType		原型 -> string		还原 -> ContentTypeType(v)
 		
 		// 例如
 		func (this *Struct) MyFunc() freehttp.ContentType {
@@ -138,7 +138,7 @@ freehttp
 		}
 		
 		// Bufio.Reader
-		freehttp.Stream			原型 ->	*bufio.Reader		还原 -> 	StreamType(v)
+		freehttp.Stream			原型 -> *bufio.Reader		还原 -> StreamType(v)
 		
 		// 例如
 		func (this *Struct) MyFunc() freehttp.Stream {
@@ -146,7 +146,7 @@ freehttp
 		}
 		
 		// File
-		freehttp.File			原型 -> string		还原 -> 	FileType(v)
+		freehttp.File			原型 -> string		还原 -> FileType(v)
 		
 		// 例如
 		func (this *Struct) MyFunc() freehttp.File {
@@ -154,7 +154,7 @@ freehttp
 		}
 		
 		// Redirect	
-		freehttp.Redirect		原型 -> strings		还原 -> 	RedirectType(v)
+		freehttp.Redirect		原型 -> strings		还原 -> RedirectType(v)
 		
 		// 例如
 		func (this *Struct) MyFunc() freehttp.Redirect {
