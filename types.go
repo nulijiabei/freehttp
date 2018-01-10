@@ -4,23 +4,36 @@ import (
 	"bufio"
 )
 
-// Json
 type Json interface{}
 
-// Json Indent
 type JsonIndent interface{}
 
-// HTTP-Status
-type HttpStatus int
+type HttpStatus interface{}
 
-// Content-Type
-type ContentType string
+func HttpStatusType(v interface{}) int {
+	return v.(int)
+}
 
-// Bufio.Reader
-type Stream *bufio.Reader
+type ContentType interface{}
 
-// File
-type File string
+func ContentTypeType(v interface{}) string {
+	return v.(string)
+}
 
-// Redirect
-type Redirect string
+type Stream interface{}
+
+func StreamType(v interface{}) *bufio.Reader {
+	return v.(*bufio.Reader)
+}
+
+type File interface{}
+
+func FileType(v interface{}) string {
+	return v.(string)
+}
+
+type Redirect interface{}
+
+func RedirectType(v interface{}) string {
+	return v.(string)
+}

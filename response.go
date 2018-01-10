@@ -24,12 +24,12 @@ func NewResponseWriter(w http.ResponseWriter) *ResponseWriter {
 
 // 回写 HTTP Status
 func (this *ResponseWriter) WriteHeader(content interface{}) {
-	this.ResponseWriter.WriteHeader(int(content.(HttpStatus)))
+	this.ResponseWriter.WriteHeader(HttpStatusType(content))
 }
 
 // 转 Json 并回写
 func (this *ResponseWriter) WriterJson(content interface{}) error {
-	data, err := json.Marshal(content.(Json))
+	data, err := json.Marshal(content)
 	if err != nil {
 		return err
 	}
@@ -39,7 +39,7 @@ func (this *ResponseWriter) WriterJson(content interface{}) error {
 
 // 转 Json 并回写（排版）
 func (this *ResponseWriter) WriterJsonIndent(content interface{}) error {
-	data, err := json.MarshalIndent((content.(JsonIndent)), "", "  ")
+	data, err := json.MarshalIndent(content, "", "  ")
 	if err != nil {
 		return err
 	}
@@ -49,12 +49,12 @@ func (this *ResponseWriter) WriterJsonIndent(content interface{}) error {
 
 // 回写 ContentType
 func (this *ResponseWriter) SetContentType(content interface{}) {
-	this.ResponseWriter.Header().Set("Content-Type", string(content.(ContentType)))
+	this.ResponseWriter.Header().Set("Content-Type", ContentTypeType(content))
 }
 
 // 回写 Bufio Stream
 func (this *ResponseWriter) WriterStream(content interface{}) error {
-	if _, err := io.Copy(this.Writer, content.(*bufio.Reader)); err != nil {
+	if _, err := io.Copy(this.Writer, StreamType(content)); err != nil {
 		return err
 	}
 	return this.Writer.Flush()
@@ -63,10 +63,11 @@ func (this *ResponseWriter) WriterStream(content interface{}) error {
 // 回写 文件
 func (this *ResponseWriter) WriterFile(content interface{}) error {
 	// Content-Type ...
-	f, err := os.Open(string(content.(File)))
+	f, err := os.Open(FileType(content))
 	if err != nil {
 		return err
 	}
+	defer f.Close()
 	if _, err := io.Copy(this.Writer, bufio.NewReader(f)); err != nil {
 		return err
 	}

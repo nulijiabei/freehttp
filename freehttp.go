@@ -27,10 +27,10 @@ func NewFreeHttp(w http.ResponseWriter, r *http.Request) *FreeHttp {
 
 // ServeFiles
 func (this *FreeHttp) ServeFiles(content interface{}) {
-	http.ServeFile(this.SuperResponseWriter.ResponseWriter, this.SuperRequest.Request, string(content.(File)))
+	http.ServeFile(this.SuperResponseWriter.ResponseWriter, this.SuperRequest.Request, FileType(content))
 }
 
 // Redirect
 func (this *FreeHttp) Redirect(content interface{}) {
-	http.Redirect(this.SuperResponseWriter.ResponseWriter, this.SuperRequest.Request, string(content.(Redirect)), http.StatusFound)
+	http.Redirect(this.SuperResponseWriter.ResponseWriter, this.SuperRequest.Request, RedirectType(content), http.StatusFound)
 }

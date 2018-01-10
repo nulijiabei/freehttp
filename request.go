@@ -41,7 +41,7 @@ func (this *Request) ReadJson() Json {
 
 // 读取 Bufio Stream
 func (this *Request) ReadStream() Stream {
-	return bufio.NewReader(this.Reader)
+	return this.Reader
 }
 
 // 读取 Content-Type

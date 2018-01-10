@@ -13,15 +13,13 @@ import (
 type Web struct {
 }
 
-/*
-func (this *Web) RradConf(conf *freehttp.INI) {
-	conf.Show()
-	conf.Set("default", "freehttp", "initalize")
-	conf.GetString("default.freehttp", "default value")
-	conf.Del("default", "freehttp")
-	conf.Save()
-}
-*/
+//func (this *Web) RradConf(conf *freehttp.INI) {
+//	conf.Show()
+//	conf.Set("default", "freehttp", "initalize")
+//	conf.GetString("default.freehttp", "default value")
+//	conf.Del("default", "freehttp")
+//	conf.Save()
+//}
 
 func (this *Web) Redirect() freehttp.Redirect {
 	return "http://www.baidu.com"
@@ -64,12 +62,12 @@ func (this *Web) ReadConfig(conf *freehttp.INI) {
 }
 
 func (this *Web) ReadStream(rw *freehttp.FreeHttp, stream freehttp.Stream) error {
-	// Content-Type ...
-	f, err := os.Open("/Users/nljb/MyCore/git/github/freehttp/README.md")
-	if err != nil {
-		return err
+	f, err := os.OpenFile("E:\\MyCore\\git\\github\\freehttp\\a", os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0666)
+	if nil != err {
+		panic(err)
 	}
-	if _, err := io.Copy(rw.SuperResponseWriter.Writer, bufio.NewReader(f)); err != nil {
+	defer f.Close()
+	if _, err := io.Copy(bufio.NewWriter(f), freehttp.StreamType(stream)); err != nil {
 		return err
 	}
 	return nil
@@ -82,7 +80,7 @@ func (this *Web) WriteStream() freehttp.Stream {
 func main() {
 
 	service := freehttp.NewService(new(Web))
-	// service.Config("/profile")
+	//	service.Config("/profile")
 
 	// 启动服务器
 	if err := service.Start(":8080"); err != nil {

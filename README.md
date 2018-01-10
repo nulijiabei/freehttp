@@ -7,6 +7,10 @@ freehttp
 
 主要是对net/http的一个反射封装，便于使用
 
+(标记类型）通过反射获取自定义类型来判断用户目的，一行代码完成反锁操作。
+比如：return "/a/b/c.jpg" -> string 	你永远不知道用户目的。
+这样：return "/a/b/c.jpg" -> File 	这样用户目的一目了然。
+
 ----------------
 
 安装
@@ -92,12 +96,14 @@ freehttp
 	衍生输入类型:
 		
 		// Bufio.Reader
-		freehttp.Stream			原型 ->	*bufio.Reader
+		freehttp.Stream			原型 ->	*bufio.Reader		还原 -> StreamType(v)
 		
 		// 例如
 		func (this *Struct) MyFunc(stream freehttp.Stream) {
-			f, _ := os.Open("../freehttp/README.md")
-			io.Copy(rw.SuperResponseWriter.Writer, bufio.NewReader(f))
+			f, err := os.OpenFile("E:\\a.txt", os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0666)
+			...
+			if _, err := io.Copy(bufio.NewWriter(f), freehttp.StreamType(stream))
+			...
 		}
 		
 	衍生输出类型:
@@ -116,7 +122,7 @@ freehttp
 		}
 			
 		// HTTP Status
-		freehttp.HttpStatus		原型 ->	int
+		freehttp.HttpStatus		原型 ->	int		还原 -> HttpStatusType(v)
 		
 		// 例如
 		func (this *Struct) MyFunc() freehttp.HttpStatus {
@@ -124,7 +130,7 @@ freehttp
 		}
 		
 		// Content-Type
-		freehttp.ContentType		原型 ->	string
+		freehttp.ContentType		原型 ->	string		还原 -> 	ContentTypeType(v)
 		
 		// 例如
 		func (this *Struct) MyFunc() freehttp.ContentType {
@@ -132,7 +138,7 @@ freehttp
 		}
 		
 		// Bufio.Reader
-		freehttp.Stream			原型 ->	*bufio.Reader
+		freehttp.Stream			原型 ->	*bufio.Reader		还原 -> 	StreamType(v)
 		
 		// 例如
 		func (this *Struct) MyFunc() freehttp.Stream {
@@ -140,7 +146,7 @@ freehttp
 		}
 		
 		// File
-		freehttp.File			原型 -> string
+		freehttp.File			原型 -> string		还原 -> 	FileType(v)
 		
 		// 例如
 		func (this *Struct) MyFunc() freehttp.File {
@@ -148,7 +154,7 @@ freehttp
 		}
 		
 		// Redirect	
-		freehttp.Redirect		原型 -> strings
+		freehttp.Redirect		原型 -> strings		还原 -> 	RedirectType(v)
 		
 		// 例如
 		func (this *Struct) MyFunc() freehttp.Redirect {

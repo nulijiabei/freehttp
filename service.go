@@ -146,7 +146,7 @@ func (this *Service) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					err := freehttp.SuperResponseWriter.WriterStream(content)
 					this.CheckError(err, name)
 				case "freehttp.File":
-					freehttp.ServeFiles(content)
+					freehttp.SuperResponseWriter.WriterFile(content)
 				case "freehttp.Redirect":
 					freehttp.Redirect(content)
 				case "error":
