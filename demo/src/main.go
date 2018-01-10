@@ -77,6 +77,7 @@ func (this *Web) WriteStream() freehttp.Stream {
 	return bufio.NewReader(strings.NewReader("..."))
 }
 
+// http://127.0.0.1:8080/MyStructName/MyFuncName
 func main() {
 
 	service := freehttp.NewService(new(Web))
