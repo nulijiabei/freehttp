@@ -24,10 +24,15 @@ http://127.0.0.1:8080/MyStructName/MyFuncName
 
 ----------------
 
-  标记类型  | 原型 | 还原 | 说明
-  ------------- | -------------
- 单元格内容  | 单元格内容 | a | b
- 单元格内容l | 单元格内容 | a | b
+  输入/输出 | 标记类型  | 类型原型 | 类型还原 | 类型说明
+  ------------- | ------------- | ------------- | ------------- | ------------- 
+ 输出 | Json | interface{}  | Func JsonType(v) | 
+ 输出 | JsonIndent | interface{}  | Func JsonIndentType(v) | a
+ 输出 | HttpStatus | int  | Func HttpStatusType(v) | a
+ 输出 | ContentType | string  | Func ContentTypeType(v)  | a
+ 输入/输出 | Stream | *bufio.Reader  | Func StreamType(v) | a
+ 输出 | File | string  | Func FileType(v)  | a
+ 输出 | Redirect | string  | Func RedirectTyoe(v)  | a
 
 ----------------
 
