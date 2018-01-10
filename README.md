@@ -21,19 +21,36 @@ http://127.0.0.1:8080/MyStructName/MyFuncName
 
 ----------------
 
-  输入/输出 | 标记类型  | 类型原型 | 类型还原 | 类型说明
-  ------------- | ------------- | ------------- | ------------- | ------------- 
- 输出 | freehttp.Json | interface{}  |  freehttp.JsonType(v) | 
- 输出 | freehttp.JsonIndent | interface{}  |  freehttp.JsonIndentType(v) | 
- 输出 | freehttp.HttpStatus | int  | freehttp.HttpStatusType(v) |
- 输出 | freehttp.ContentType | string  | freehttp.ContentTypeType(v)  | 
- 输入/输出 | freehttp.Stream | *bufio.Reader  | freehttp.StreamType(v) | 
- 输出 | freehttp.File | string  | freehttp.FileType(v)  | 
- 输出 | freehttp.Redirect | string  | freehttp.RedirectTyoe(v)  | 
+输入类型
+
+ 输入 | 标记类型  | 类型原型 | 类型说明
+  ------------- | ------------- | ------------- | -------------
+ 输入 | *freehttp.FreeHttp | -  |  - 
+ 输入 | *freehttp.Request | -  |  - 
+ 输入 | *freehttp.ResponseWriter | -  |  - 
+ 输入 | *freehttp.INI | -  |  - 
+ 输入 | freehttp.Json | -  |  - 
+ 输入 | freehttp.ContentType | -  |  - 
+ 输入 | freehttp.Json | -  |  - 
+ 输入 | freehttp.Stream | -  |  - 
 
 ----------------
 
-使用方法
+输出类型
+
+ 输出 | 标记类型  | 类型原型 | 类型说明
+  ------------- | ------------- | ------------- | ------------- 
+ 输出 | freehttp.Json | map[string]interface{}  |  -
+ 输出 | freehttp.JsonIndent | map[string]interface{}  |  -
+ 输出 | freehttp.HttpStatus | int  | -
+ 输出 | freehttp.ContentType | string  | -
+ 输出 | freehttp.Stream | *bufio.Reader  | -
+ 输出 | freehttp.File | string  | -
+ 输出 | freehttp.Redirect | string  | -
+
+----------------
+
+核心结构
 
 	核心默认服务：
 	
@@ -53,6 +70,8 @@ http://127.0.0.1:8080/MyStructName/MyFuncName
 	
 		freehttp.Request.*			基于对 http.Request        的自定义帮助方法
 		freehttp.ResponseWriter.*		基于对 http.ResponseWriter 的自定义帮助方法
+		
+----------------
 		
 	核心配置类型
 	
