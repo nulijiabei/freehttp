@@ -95,6 +95,8 @@ http://127.0.0.1:8080/MyStructName/MyFuncName
 		// 说明：未初始化配置文件的情况下使用*freehttp.INI参数会造成错误
 		// Use a non-initialized type: *freehttp.INI
 		
+----------------
+		
 	核心输入类型:
 	
 		// 类型
@@ -124,6 +126,8 @@ http://127.0.0.1:8080/MyStructName/MyFuncName
 		func (this *Struct) MyFunc(w *freehttp.ResponseWriter) {
 			// w.ResponseWriter.Write()
 		}
+		
+----------------
 	
 	衍生输入类型:
 		
@@ -137,6 +141,8 @@ http://127.0.0.1:8080/MyStructName/MyFuncName
 			if _, err := io.Copy(bufio.NewWriter(f), freehttp.StreamType(stream))
 			...
 		}
+		
+----------------
 		
 	衍生输出类型:
 		
