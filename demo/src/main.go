@@ -77,11 +77,18 @@ func (this *Web) WriteStream() freehttp.Stream {
 	return bufio.NewReader(strings.NewReader("..."))
 }
 
-// http://127.0.0.1:8080/MyStructName/MyFuncName
 func main() {
 
-	service := freehttp.NewService(new(Web))
+	web := new(Web)
+
+	service := freehttp.NewService(web)
 	//	service.Config("/profile")
+
+	service.Router("/baidu", web.WriteJson)
+	service.Router("/download", web.Download)
+	service.Router("/readjson", web.ReadJson)
+	service.Router("/writestream", web.WriteStream)
+	service.Router("/redirect", web.Redirect)
 
 	// 启动服务器
 	if err := service.Start(":8080"); err != nil {

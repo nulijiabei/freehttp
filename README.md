@@ -3,14 +3,59 @@ freehttp
 
 <a href="https://godoc.org/github.com/nulijiabei/freehttp"><img src="https://godoc.org/github.com/nulijiabei/freehttp?status.svg" alt="GoDoc"></a>
 
-一个快速将类和子方法转换成http接口，并且通过反射为http接口封装更多人性化的帮助方法 ... 
-
-http://127.0.0.1:8080/MyStructName/MyFuncName
+快速将http服务集成到自定义类及子类中，并且通过反射为http接口封装更多人性化的帮助方法 ... 
 
 ----------------
 
-* 将类和子方法转换成以MyStructName/MyFuncName的URL访问地址 ...
-* 将子方法输入与输出参数通过反射封装标记类型提供人性化帮助方法 ...
+为什么要做这个项目
+
+	现在实现一个HTTP-API往往是下面这个方式 ... 
+		func sayhelloName(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprintf(w, "Hello!")
+		}
+		func main() {
+			http.HandleFunc("/", sayhelloName) 
+			http.ListenAndServe(":9090", nil)
+		}
+	问题来了，用GO用久了，面向对象，总是这样做 ...
+		type Demo struct {
+			Data1 ...
+			Data2 ...
+			Data3 ...
+		}
+		func (this *Demo) sayhelloName(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprintf(w, this.Data1 ...)
+		}
+	但是上面这样用面向对象的形式可行吗 ... 默认结构下是不可以的 ... 你可能会说我可以自定义
+		type Demo struct {
+			Data1 ...
+			Data2 ...
+		}
+		func (this *Demo) ServeHTTP(w http.ResponseWriter, r *http.Request) {}
+	但是这样真的方便吗 ... 自定义路由？ ... 等等 ... 可能你还会有办法比如这样：
+		var DEMO *Demo
+		type Demo struct {
+			Data1 ...
+			Data2 ...
+		}
+		func sayhelloName(w http.ResponseWriter, r *http.Request) {	
+			fmt.Fprintf(w, DEMO.Data1 ....)
+		}
+		func main() {
+			DEMO = new(Demo)
+			http.HandleFunc("/", sayhelloName) 
+			http.ListenAndServe(":9090", nil)
+		}
+	这样是可行，全局变量 ... 但是又回来了 ... 面向对象的结构呢 ... 
+	以上的方法我都曾经在不同的项目里面使用过 ... 但是总觉得差点什么 ...
+	现在做了这个项目 ... 
+	
+----------------
+
+* 一、可以直接将自定义结构类注册到freehttp服务 ...
+* 二、可以为自定义结构类中的子类指定路由地址（访问地址URL）
+* 三、结构类中子类均可成为HTTP-API并且可以使用结构类中的资源
+* 四、提供方法输入与输出参数通过反射封装标记类型提供人性化帮助方法 ...
 
 ----------------
 
@@ -18,7 +63,6 @@ http://127.0.0.1:8080/MyStructName/MyFuncName
 
 	go get github.com/nulijiabei/freehttp
 	
-
 ----------------
 
 输入类型
@@ -217,7 +261,6 @@ http://127.0.0.1:8080/MyStructName/MyFuncName
 
 
 	// 随便定义一些方法
-	// http://127.0.0.1:8080/StructName/FuncName
 	func (this *Web) MyFunc(输入类型 + 输入类型 + ...) 输出类型 + 输出类型 + ... {
 		// 使用输入类型 ...
 		// 返回输出类型 ...
@@ -225,10 +268,16 @@ http://127.0.0.1:8080/MyStructName/MyFuncName
 
 	// 启动
 	func main() {
+		
+		// New 自定义结构类
+		web := new(Web)
 
 		// 创建一个 service
-		service := freehttp.NewService(new(Web))
+		service := freehttp.NewService(web)
 		// service.Config("/profile")
+		
+		// 路由 ...
+		service.Router("/baidu", web.MyFunc)
 
 		// 启动服务器
 		if err := service.Start(":8080"); err != nil {
@@ -280,8 +329,10 @@ http://127.0.0.1:8080/MyStructName/MyFuncName
 	}
 
 	func main() {
-		service := freehttp.NewService(new(API))
+		api := new(API)
+		service := freehttp.NewService(api)
 		// service.Config("/profile")
+		service.Router("/update", web.Update)
 		if err := service.Start(":8080"); err != nil {
 			panic(err)
 		}

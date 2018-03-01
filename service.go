@@ -4,27 +4,35 @@ import (
 	"fmt"
 	"net/http"
 	"reflect"
+	"regexp"
 	"runtime"
-	"strings"
 )
 
-// Server Json HTTP
 type Service struct {
 	conf    *INI
 	name    string
 	rcvr    reflect.Value
 	typ     reflect.Type
 	methods map[string]reflect.Method
+	router  map[string]string
 }
 
-// 创建 Server 其中 def 为路径处理函数 nil 则使用默认
+// 创建 Service
 func NewService(rcvr interface{}) *Service {
 	service := new(Service)
 	service.methods = make(map[string]reflect.Method)
+	service.router = make(map[string]string)
 	if err := service.Register(rcvr); err != nil {
 		panic(err)
 	}
 	return service
+}
+
+// 添加路由
+func (this *Service) Router(path string, method interface{}) {
+	name := runtime.FuncForPC(reflect.ValueOf(method).Pointer()).Name()
+	a1 := regexp.MustCompile(`\).*-`).FindAllString(name, -1)[0]
+	this.router[path] = a1[2 : len(a1)-1]
 }
 
 // 启动服务
@@ -72,14 +80,10 @@ func (this *Service) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	status := false
 	// 重要：创建FreeHttp并初始化 ...
 	freehttp := NewFreeHttp(w, r)
-	// 统一小写
-	r.URL.Path = strings.ToLower(r.URL.Path)
-	// 遍历注册函数
-	for name, method := range this.methods {
-		// 注册类与函数名转换为URL路径
-		url := strings.ToLower(fmt.Sprintf("/%s/%s", this.name, name))
-		// 匹配 URL
-		if url == r.URL.Path {
+	// 匹配路径
+	if name, ok := this.router[r.URL.Path]; ok {
+		// 匹配函数
+		if method, ok := this.methods[name]; ok {
 			// 标记匹配
 			status = true
 			// 创建参数集
