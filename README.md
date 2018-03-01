@@ -332,7 +332,7 @@ freehttp
 		api := new(API)
 		service := freehttp.NewService(api)
 		// service.Config("/profile")
-		service.Router("/update", web.Update)
+		service.Router("/update", api.Update)
 		if err := service.Start(":8080"); err != nil {
 			panic(err)
 		}
