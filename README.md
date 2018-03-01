@@ -54,7 +54,7 @@ freehttp
 			Data2 ...
 		}
 		// 其中 freehttp.JsonIndent 为内置帮助方法
-		// 自动把返回的 map 转换为 Json 输出 ...
+		// 自动把返回的对象(map、struct)转换为 Json 输出 ...
 		func (this *Demo) Hello() freehttp.JsonIndent {
 			m := make(map[string]interface{})
 			m["nljb"] = "www.nljb.net"
@@ -304,29 +304,26 @@ freehttp
 
 -----------------
 
-	// 案例不会随着代码的更新而更新，具体使用方法请根据使用方法
-
-	案例：
+	// 案例：
 
 	package main
-
+	
 	import (
-		"fmt"
-		"freehttp"
 		"log"
-		"strings"
+	
+		"../../../freehttp"
 	)
-
+	
 	type API struct {
 	}
-
+	
 	// ...
 	type Update struct {
 		Version string `json:"version"`
 		Build   string `json:"build"`
 		Url     string `json:"url"`
 	}
-
+	
 	func (this *API) Update(r *freehttp.Request) freehttp.JsonIndent {
 		// 解析参数
 		r.Request.ParseForm()
@@ -341,9 +338,9 @@ freehttp
 		up.Build = "10"
 		up.Url = "www.baidu.com"
 		// 返回
-		return freehttp.JsonIndent(up)
+		return up
 	}
-
+	
 	func main() {
 		api := new(API)
 		service := freehttp.NewService(api)
@@ -353,4 +350,5 @@ freehttp
 			panic(err)
 		}
 	}
+
 
