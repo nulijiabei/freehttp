@@ -88,7 +88,6 @@ freehttp
  输入 | *freehttp.FreeHttp | -  |  - 
  输入 | *freehttp.Request | -  |  - 
  输入 | *freehttp.ResponseWriter | -  |  - 
- 输入 | *freehttp.INI | -  |  - 
  输入 | freehttp.Json | -  |  - 
  输入 | freehttp.ContentType | -  |  - 
  输入 | freehttp.Json | -  |  - 
@@ -140,31 +139,7 @@ freehttp
 		freehttp.ResponseWriter.*		基于对 http.ResponseWriter 的自定义帮助方法
 		
 ----------------
-		
-	核心配置类型
-
-		// 类型
-		freehttp.INI 
-
-		// 初始化配置文件（INI格式）
-		service := freehttp.NewService()
-		service.Config("/profile")
-		...
-
-		// 例如
-		func (this *MyStruct) MyFunc(conf *freehttp.INI) {
-			conf.Show()
-			conf.Set("default", "freehttp", "initalize")
-			conf.GetString("default.freehttp", "default value")
-			conf.Del("default", "freehttp")
-			conf.Save()
-		}
-
-		// 说明：未初始化配置文件的情况下使用*freehttp.INI参数会造成错误
-		// Use a non-initialized type: *freehttp.INI
-		
-----------------
-		
+				
 	核心输入类型:
 
 		// 类型
@@ -266,7 +241,6 @@ freehttp
 		func (this *MyStruct) MyFunc() freehttp.Redirect {
 			return "http://www.baidu.com"
 		}
-
 		
 ----------------
 
@@ -307,10 +281,20 @@ freehttp
 
 	// 随便定义一个类
 	type Web struct {}
+	
+	// 随便再定义一个类
+	type Demo struct {}
 
 
 	// 随便定义一些方法
 	func (this *Web) MyFunc(输入类型 + 输入类型 + ...) 输出类型 + 输出类型 + ... {
+		// 使用输入类型 ...
+		// 使用帮助方法 ...
+		// 返回输出类型 ...
+	}
+	
+	// 随便定义一些方法
+	func (this *Demo) MyFunc(输入类型 + 输入类型 + ...) 输出类型 + 输出类型 + ... {
 		// 使用输入类型 ...
 		// 使用帮助方法 ...
 		// 返回输出类型 ...
@@ -321,13 +305,18 @@ freehttp
 		
 		// New 自定义结构类
 		web := new(Web)
+		demo := new(Demo)
 
-		// 创建一个 service
-		service := freehttp.NewService(web)
-		// service.Config("/profile")
+		// 创建一个 Service
+		service := freehttp.NewService()
+
+		// 注册结构类		
+		service.Register(web)
+		service.Register(demo)
 		
-		// 路由 ...
+		// 添加路由 ...
 		service.Router("/baidu", web.MyFunc)
+		service.Router("/sina", demo.MyFunc)
 
 		// 启动服务器
 		if err := service.Start(":8080"); err != nil {
@@ -339,7 +328,7 @@ freehttp
 -----------------
 
 	// 案例：
-
+	
 	package main
 	
 	import (
@@ -377,12 +366,13 @@ freehttp
 	
 	func main() {
 		api := new(API)
-		service := freehttp.NewService(api)
-		// service.Config("/profile")
+		service := freehttp.NewService()
+		service.Register(api)
 		service.Router("/update", api.Update)
 		if err := service.Start(":8080"); err != nil {
 			panic(err)
 		}
 	}
 
+-----------------
 

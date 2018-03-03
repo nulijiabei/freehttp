@@ -13,14 +13,6 @@ import (
 type Web struct {
 }
 
-//func (this *Web) RradConf(conf *freehttp.INI) {
-//	conf.Show()
-//	conf.Set("default", "freehttp", "initalize")
-//	conf.GetString("default.freehttp", "default value")
-//	conf.Del("default", "freehttp")
-//	conf.Save()
-//}
-
 func (this *Web) Redirect() freehttp.Redirect {
 	return "http://www.baidu.com"
 }
@@ -51,12 +43,6 @@ func (this *Web) WriteStatus() freehttp.ContentType {
 
 func (this *Web) ReadJson(json *freehttp.Json) {
 	if json == nil {
-		fmt.Println("hahaha")
-	}
-}
-
-func (this *Web) ReadConfig(conf *freehttp.INI) {
-	if conf == nil {
 		fmt.Println("hahaha")
 	}
 }
@@ -97,19 +83,37 @@ func (this *Web) WebSocket(rw *freehttp.FreeHttp) {
 	})
 }
 
+// -----------------------
+// 多结构类支持
+
+type TTT struct {
+}
+
+func (this *TTT) Redirect() freehttp.Redirect {
+	return "http://www.nljb.net"
+}
+
+// -----------------------
+
 func main() {
 
+	// New Service
+	service := freehttp.NewService()
+
+	// Web
 	web := new(Web)
-
-	service := freehttp.NewService(web)
-	//	service.Config("/profile")
-
+	service.Register(web)
 	service.Router("/baidu", web.WriteJson)
 	service.Router("/download", web.Download)
 	service.Router("/readjson", web.ReadJson)
 	service.Router("/writestream", web.WriteStream)
 	service.Router("/redirect", web.Redirect)
 	service.Router("/websocket", web.WebSocket)
+
+	// 多结构类支持
+	ttt := new(TTT)
+	service.Register(ttt)
+	service.Router("/nljb", ttt.Redirect)
 
 	// 启动服务器
 	if err := service.Start(":8080"); err != nil {
