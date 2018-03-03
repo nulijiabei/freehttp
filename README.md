@@ -110,6 +110,14 @@ freehttp
 
 ----------------
 
+帮助方法
+
+帮助 | 方法继承 | 帮助方法 | 帮助说明
+------------- | ------------- | ------------- | -------------
+帮助 | freehttp.FreeHttp | NewWebSokcet | HTTP -> WebSocket
+
+----------------
+
 核心结构
 
 	核心默认服务：
@@ -144,7 +152,7 @@ freehttp
 		...
 
 		// 例如
-		func (this *Struct) MyFunc(conf *freehttp.INI) {
+		func (this *MyStruct) MyFunc(conf *freehttp.INI) {
 			conf.Show()
 			conf.Set("default", "freehttp", "initalize")
 			conf.GetString("default.freehttp", "default value")
@@ -163,7 +171,7 @@ freehttp
 		freehttp.FreeHttp
 
 		// 例如
-		func (this *Struct) MyFunc(rw *freehttp.FreeHttp) {
+		func (this *MyStruct) MyFunc(rw *freehttp.FreeHttp) {
 			rw.SuperResponseWriter.ResponseWriter.Write([]byte("print"))
 		}
 
@@ -173,7 +181,7 @@ freehttp
 		freehttp.Request = *http.Request
 
 		// 例如
-		func (this *Struct) MyFunc(r *freehttp.Request) {
+		func (this *MyStruct) MyFunc(r *freehttp.Request) {
 			// r.Request.Body
 		}
 
@@ -183,7 +191,7 @@ freehttp
 		freehttp.ResponseWriter = http.ResponseWriter 
 
 		// 例如
-		func (this *Struct) MyFunc(w *freehttp.ResponseWriter) {
+		func (this *MyStruct) MyFunc(w *freehttp.ResponseWriter) {
 			// w.ResponseWriter.Write()
 		}
 		
@@ -195,7 +203,7 @@ freehttp
 		freehttp.Stream		原型 -> *bufio.Reader		还原 -> StreamType(v)
 
 		// 例如
-		func (this *Struct) MyFunc(stream freehttp.Stream) {
+		func (this *MyStruct) MyFunc(stream freehttp.Stream) {
 			f, err := os.OpenFile("E:\\a.txt", os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0666)
 			...
 			if _, err := io.Copy(bufio.NewWriter(f), freehttp.StreamType(stream))
@@ -213,7 +221,7 @@ freehttp
 		freehttp.JsonIndent		原型 -> map[string]interface{}
 
 		// 例如
-		func (this *Struct) MyFunc() (freehttp.Json, freehttp.JsonIndent) {
+		func (this *MyStruct) MyFunc() (freehttp.Json, freehttp.JsonIndent) {
 			m := make(map[string]interface{})
 			m["baidu"] = "www.baidu.com"
 			return m, m
@@ -223,7 +231,7 @@ freehttp
 		freehttp.HttpStatus		原型 -> int		还原 -> HttpStatusType(v)
 
 		// 例如
-		func (this *Struct) MyFunc() freehttp.HttpStatus {
+		func (this *MyStruct) MyFunc() freehttp.HttpStatus {
 			return 404
 		}
 
@@ -231,7 +239,7 @@ freehttp
 		freehttp.ContentType		原型 -> string		还原 -> ContentTypeType(v)
 
 		// 例如
-		func (this *Struct) MyFunc() freehttp.ContentType {
+		func (this *MyStruct) MyFunc() freehttp.ContentType {
 			return "image/gif"
 		}
 
@@ -239,7 +247,7 @@ freehttp
 		freehttp.Stream			原型 -> *bufio.Reader		还原 -> StreamType(v)
 
 		// 例如
-		func (this *Struct) MyFunc() freehttp.Stream {
+		func (this *MyStruct) MyFunc() freehttp.Stream {
 			return bufio.NewReader(strings.NewReader("..."))
 		}
 
@@ -247,7 +255,7 @@ freehttp
 		freehttp.File			原型 -> string		还原 -> FileType(v)
 
 		// 例如
-		func (this *Struct) MyFunc() freehttp.File {
+		func (this *MyStruct) MyFunc() freehttp.File {
 			return ".../freehttp/README.md"
 		}
 
@@ -255,11 +263,36 @@ freehttp
 		freehttp.Redirect		原型 -> strings		还原 -> RedirectType(v)
 
 		// 例如
-		func (this *Struct) MyFunc() freehttp.Redirect {
+		func (this *MyStruct) MyFunc() freehttp.Redirect {
 			return "http://www.baidu.com"
 		}
 
 		
+----------------
+
+	衍生帮助方法:
+	
+		// HTTP -> WebSocket
+		func (this *MyStruct) MyFunc(rw *freehttp.FreeHttp) {
+			// HTTP -> WebSocket
+			rw.NewWebSokcet(func(conn *freehttp.WSConn) {
+				// WSConn = websocket.Conn
+				conn.Write([]byte("Hello WebSokcet !!!"))
+				r := bufio.NewReader(conn)
+				for {
+					v, err := r.ReadBytes('\n')
+					if err != nil {
+						if err != io.EOF {
+							panic(err)
+						}
+						break
+					}
+					conn.Write(v)
+					conn.Write([]byte("\n"))
+				}
+			})
+		}
+	
 ----------------
 
 	// 本例会随着程序版本的更新而更新
@@ -279,6 +312,7 @@ freehttp
 	// 随便定义一些方法
 	func (this *Web) MyFunc(输入类型 + 输入类型 + ...) 输出类型 + 输出类型 + ... {
 		// 使用输入类型 ...
+		// 使用帮助方法 ...
 		// 返回输出类型 ...
 	}
 

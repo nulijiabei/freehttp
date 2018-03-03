@@ -9,7 +9,12 @@ package freehttp
 
 import (
 	"net/http"
+
+	"./websocket"
 )
+
+// WebSocket
+type WSConn = websocket.Conn
 
 // FreeHttp
 type FreeHttp struct {
@@ -33,4 +38,12 @@ func (this *FreeHttp) ServeFiles(content interface{}) {
 // Redirect
 func (this *FreeHttp) Redirect(content interface{}) {
 	http.Redirect(this.SuperResponseWriter.ResponseWriter, this.SuperRequest.Request, RedirectType(content), http.StatusFound)
+}
+
+// WebSocket
+func (this *FreeHttp) NewWebSokcet(handler func(*WSConn)) {
+	s := websocket.Server{Handshake: websocket.CheckOrigin}
+	s.ServeWebSocket(this.SuperResponseWriter.ResponseWriter, this.SuperRequest.Request, func(conn *WSConn) {
+		handler(conn)
+	})
 }

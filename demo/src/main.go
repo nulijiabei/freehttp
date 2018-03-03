@@ -77,6 +77,26 @@ func (this *Web) WriteStream() freehttp.Stream {
 	return bufio.NewReader(strings.NewReader("..."))
 }
 
+func (this *Web) WebSocket(rw *freehttp.FreeHttp) {
+	// HTTP -> WebSocket
+	rw.NewWebSokcet(func(conn *freehttp.WSConn) {
+		// WSConn = websocket.Conn
+		conn.Write([]byte("Hello WebSokcet !!!"))
+		r := bufio.NewReader(conn)
+		for {
+			v, err := r.ReadBytes('\n')
+			if err != nil {
+				if err != io.EOF {
+					panic(err)
+				}
+				break
+			}
+			conn.Write(v)
+			conn.Write([]byte("\n"))
+		}
+	})
+}
+
 func main() {
 
 	web := new(Web)
@@ -89,6 +109,7 @@ func main() {
 	service.Router("/readjson", web.ReadJson)
 	service.Router("/writestream", web.WriteStream)
 	service.Router("/redirect", web.Redirect)
+	service.Router("/websocket", web.WebSocket)
 
 	// 启动服务器
 	if err := service.Start(":8080"); err != nil {
