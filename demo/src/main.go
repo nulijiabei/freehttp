@@ -63,6 +63,9 @@ func (this *Web) WriteStream() freehttp.Stream {
 	return bufio.NewReader(strings.NewReader("..."))
 }
 
+// -----------------------
+// WebSocket 支持
+
 func (this *Web) WebSocket(rw *freehttp.FreeHttp) {
 	// HTTP -> WebSocket
 	rw.NewWebSokcet(func(conn *freehttp.WSConn) {
@@ -86,10 +89,10 @@ func (this *Web) WebSocket(rw *freehttp.FreeHttp) {
 // -----------------------
 // 多结构类支持
 
-type TTT struct {
+type Support struct {
 }
 
-func (this *TTT) Redirect() freehttp.Redirect {
+func (this *Support) Redirect() freehttp.Redirect {
 	return "http://www.nljb.net"
 }
 
@@ -111,9 +114,9 @@ func main() {
 	service.Router("/websocket", web.WebSocket)
 
 	// 多结构类支持
-	ttt := new(TTT)
-	service.Register(ttt)
-	service.Router("/nljb", ttt.Redirect)
+	support := new(Support)
+	service.Register(support)
+	service.Router("/nljb", support.Redirect)
 
 	// 启动服务器
 	if err := service.Start(":8080"); err != nil {
