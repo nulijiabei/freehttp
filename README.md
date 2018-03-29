@@ -84,7 +84,7 @@ freehttp
 输入类型
 
  输入 | 标记类型  | 类型原型 | 类型还原 | 类型说明
-  ------------- | ------------- | ------------- | -------------
+  ------------- | ------------- | ------------- | ------------- | -------------
  输入 | *freehttp.FreeHttp | - | 无 | 根 = freehttp.Request + freehttp.ResponseWriter
  输入 | *freehttp.Request | *http.Request | 无 | 封装
  输入 | *freehttp.ResponseWriter | http.ResponseWriter | 无 | 封装
