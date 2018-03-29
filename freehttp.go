@@ -13,6 +13,7 @@ import (
 	"./websocket"
 )
 
+// golang v1.9
 // WebSocket
 type WSConn = websocket.Conn
 

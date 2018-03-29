@@ -69,6 +69,7 @@ func (this *Web) WriteStream() freehttp.Stream {
 func (this *Web) WebSocket(rw *freehttp.FreeHttp) {
 	// HTTP -> WebSocket
 	rw.NewWebSokcet(func(conn *freehttp.WSConn) {
+
 		// WSConn = websocket.Conn
 		conn.Write([]byte("Hello WebSokcet !!!"))
 		r := bufio.NewReader(conn)
