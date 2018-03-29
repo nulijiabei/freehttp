@@ -83,29 +83,28 @@ freehttp
 
 输入类型
 
- 输入 | 标记类型  | 类型原型 | 类型说明
+ 输入 | 标记类型  | 类型原型 | 类型还原 | 类型说明
   ------------- | ------------- | ------------- | -------------
- 输入 | *freehttp.FreeHttp | -  |  - 
- 输入 | *freehttp.Request | -  |  - 
- 输入 | *freehttp.ResponseWriter | -  |  - 
- 输入 | freehttp.Json | -  |  - 
- 输入 | freehttp.ContentType | -  |  - 
- 输入 | freehttp.Json | -  |  - 
- 输入 | freehttp.Stream | -  |  - 
+ 输入 | *freehttp.FreeHttp | - | 无 | 根 = freehttp.Request + freehttp.ResponseWriter
+ 输入 | *freehttp.Request | *http.Request | 无 | 封装
+ 输入 | *freehttp.ResponseWriter | http.ResponseWriter | 无 | 封装
+ 输入 | freehttp.Json | map[string]interface{} | 无 | Body -> Json
+ 输入 | freehttp.ContentType | string | freehttp.ContentTypeType() | Content-Type
+ 输入 | freehttp.Stream | *bufio.Reader | freehttp.StreamType() | *http.Request.Body
 
 ----------------
 
 输出类型
 
- 输出 | 标记类型  | 类型原型 | 类型说明
+ 输出 | 标记类型  | 支持类型 | 类型说明
   ------------- | ------------- | ------------- | ------------- 
- 输出 | freehttp.Json | map[string]interface{}  |  -
- 输出 | freehttp.JsonIndent | map[string]interface{}  |  -
- 输出 | freehttp.HttpStatus | int  | -
- 输出 | freehttp.ContentType | string  | -
- 输出 | freehttp.Stream | *bufio.Reader  | -
- 输出 | freehttp.File | string  | -
- 输出 | freehttp.Redirect | string  | -
+ 输出 | freehttp.Json | obj/map | Json -> Body
+ 输出 | freehttp.JsonIndent | obj/map | Json -> Body
+ 输出 | freehttp.HttpStatus | int | http.WriteHeader
+ 输出 | freehttp.ContentType | string  | Content-Type
+ 输出 | freehttp.Stream | *bufio.Reader | *bufio.Reader -> http.ResponseWriter
+ 输出 | freehttp.File | string | F -> *bufio.Reader -> http.ResponseWriter
+ 输出 | freehttp.Redirect | string | http.Redirect
 
 ----------------
 
