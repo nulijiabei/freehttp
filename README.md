@@ -174,72 +174,73 @@ freehttp
 	衍生输入类型:
 
 		// Bufio.Reader
-		freehttp.Stream		原型 -> *bufio.Reader		还原 -> StreamType(v)
+		freehttp.Stream		
 
-		// 例如
-		func (this *MyStruct) MyFunc(stream freehttp.Stream) {
-			f, err := os.OpenFile("E:\\a.txt", os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0666)
-			...
-			if _, err := io.Copy(bufio.NewWriter(f), freehttp.StreamType(stream))
-			...
-		}
+			// 例如
+			func (this *MyStruct) MyFunc(stream freehttp.Stream) {
+				f, err := os.OpenFile("E:\\a.txt", os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0666)
+				...
+				// stream 原型(*bufio.Reader) 还原(StreamType(v))
+				if _, err := io.Copy(bufio.NewWriter(f), freehttp.StreamType(stream))
+				...
+			}
 		
 ----------------
 		
 	衍生输出类型:
 
 		// Json 普通格式
-		freehttp.Json			原型 -> map[string]interface{}	 
+		freehttp.Json
 
 		// Json 排版格式
-		freehttp.JsonIndent		原型 -> map[string]interface{}
+		freehttp.JsonIndent
 
-		// 例如
-		func (this *MyStruct) MyFunc() (freehttp.Json, freehttp.JsonIndent) {
-			m := make(map[string]interface{})
-			m["baidu"] = "www.baidu.com"
-			return m, m
-		}
+			// 例如
+			func (this *MyStruct) MyFunc() (freehttp.Json, freehttp.JsonIndent) {
+				m := make(map[string]interface{})
+				m["baidu"] = "www.baidu.com"
+				return m, m
+			}
 
 		// HTTP Status
-		freehttp.HttpStatus		原型 -> int		还原 -> HttpStatusType(v)
-
-		// 例如
-		func (this *MyStruct) MyFunc() freehttp.HttpStatus {
-			return 404
-		}
+		freehttp.HttpStatus
+		
+			// 例如
+			func (this *MyStruct) MyFunc() freehttp.HttpStatus {
+				return 404
+			}
 
 		// Content-Type
-		freehttp.ContentType		原型 -> string		还原 -> ContentTypeType(v)
+		freehttp.ContentType
 
-		// 例如
-		func (this *MyStruct) MyFunc() freehttp.ContentType {
-			return "image/gif"
-		}
+			// 例如
+			func (this *MyStruct) MyFunc() freehttp.ContentType {
+				return "image/gif"
+			}
 
 		// Bufio.Reader
-		freehttp.Stream			原型 -> *bufio.Reader		还原 -> StreamType(v)
+		freehttp.Stream
 
-		// 例如
-		func (this *MyStruct) MyFunc() freehttp.Stream {
-			return bufio.NewReader(strings.NewReader("..."))
-		}
+			// 例如
+			func (this *MyStruct) MyFunc() freehttp.Stream {
+				return bufio.NewReader(strings.NewReader("..."))
+			}
 
 		// File
-		freehttp.File			原型 -> string		还原 -> FileType(v)
+		freehttp.File
 
-		// 例如
-		func (this *MyStruct) MyFunc() freehttp.File {
-			return ".../freehttp/README.md"
-		}
+			// 例如
+			func (this *MyStruct) MyFunc() freehttp.File {
+				return ".../freehttp/README.md"
+			}
 
 		// Redirect	
-		freehttp.Redirect		原型 -> strings		还原 -> RedirectType(v)
+		freehttp.Redirect
 
-		// 例如
-		func (this *MyStruct) MyFunc() freehttp.Redirect {
-			return "http://www.baidu.com"
-		}
+			// 例如
+			func (this *MyStruct) MyFunc() freehttp.Redirect {
+				return "http://www.baidu.com"
+			}
 		
 ----------------
 
