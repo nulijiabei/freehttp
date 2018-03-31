@@ -10,7 +10,6 @@ import (
 	"image/png"
 	"io"
 	"io/ioutil"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"net/url"
@@ -29,7 +28,7 @@ import (
 // error
 func NoError(err error) {
 	if err != nil {
-		log.Panic(err)
+		panic(err)
 	}
 }
 
@@ -205,7 +204,7 @@ func Fexists(ph string) bool {
 func GetEnv(v string) string {
 	home := os.Getenv(v)
 	if IsBlank(home) {
-		log.Panic(fmt.Sprintf("$%s", v))
+		panic(fmt.Sprintf("$%s", v))
 	}
 	return home
 }

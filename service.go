@@ -162,6 +162,8 @@ func (this *Service) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						fmt.Printf("unsupported out type: %s\n", reType)
 					}
 				}
+				// Auto Close
+				freehttp.SuperRequest.Close()
 			}
 		}
 	}

@@ -113,6 +113,7 @@ func main() {
 	service.Router("/writestream", web.WriteStream)
 	service.Router("/redirect", web.Redirect)
 	service.Router("/websocket", web.WebSocket)
+	service.Router("/readwrite", web.ReadWrite)
 
 	// 多结构类支持
 	support := new(Support)

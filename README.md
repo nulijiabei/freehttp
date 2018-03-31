@@ -15,7 +15,7 @@ freehttp
 	type Web struct {}
 	
 	// Func Hello
-	func (this *Web) Hello() freehttp.Json {
+	func (this *Web) Hello(w *freehttp.ResponseWriter, r *freehttp.Request) freehttp.Json {
 		m := make(map[string]interface{})
 		m["Url"] = "www.nljb.net"
 		return m
