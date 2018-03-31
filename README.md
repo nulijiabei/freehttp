@@ -7,6 +7,37 @@ freehttp
 
 ----------------
 
+简例 - <a href="https://github.com/nulijiabei/freehttp/blob/master/demo/src/main.go">更多例子</a>
+
+	// http://127.0.0.1:8080/hello
+
+	//  Web
+	type Web struct {}
+	
+	// Func Hello
+	func (this *Web) Hello() freehttp.Json {
+		m := make(map[string]interface{})
+		m["Url"] = "www.nljb.net"
+		return m
+	}
+	
+	// New Service
+	service := freehttp.NewService()
+	
+	// New Web
+	web := new(Web)
+
+	// 注册结构类		
+	service.Register(web)
+	
+	// 添加路由 ...
+	service.Router("/hello", web.MyFunc)
+
+	// 启动服务器
+	service.Start(":8080")
+
+----------------
+
 为什么要做这个项目
 
 	现在实现一个HTTP-API往往是下面这个方式 ... 
@@ -66,12 +97,6 @@ freehttp
 		service.Start(":8080")
 	直接访问 http://127.0.0.1:8080/hello 吧 ...
 	这样就可以了 ... 不仅这些 ... freehttp 还提供了很多内置帮助方法 ...
-----------------
-
-* 一、可以直接将自定义结构类注册到freehttp服务 ...
-* 二、可以为自定义结构类中的子类指定路由地址（访问地址URL）
-* 三、结构类中子类均可成为HTTP-API并且可以使用结构类中的资源
-* 四、提供方法输入与输出参数通过反射封装标记类型提供人性化帮助方法 ...
 
 ----------------
 
@@ -108,11 +133,11 @@ freehttp
 
 ----------------
 
-帮助方法
+扩展方法
 
-帮助 | 方法继承 | 帮助方法 | 帮助说明
+扩展 | 方法继承 | 帮助方法 | 帮助说明
 ------------- | ------------- | ------------- | -------------
-帮助 | freehttp.FreeHttp | NewWebSokcet | HTTP -> WebSocket
+扩展 | freehttp.FreeHttp | NewWebSokcet | HTTP -> WebSocket
 
 ----------------
 
