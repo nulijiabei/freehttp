@@ -31,7 +31,7 @@ freehttp
 	service.Register(web)
 	
 	// 添加路由 ...
-	service.Router("/hello", web.MyFunc)
+	service.Router("/hello", web.Hello)
 
 	// 启动服务器
 	service.Start(":8080")
