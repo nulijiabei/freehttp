@@ -21,20 +21,24 @@ freehttp
 		return m
 	}
 	
-	// New Service
-	service := freehttp.NewService()
+	func main() {
+		
+		// New Service
+		service := freehttp.NewService()
+		
+		// New Web
+		web := new(Web)
 	
-	// New Web
-	web := new(Web)
-
-	// 注册结构类		
-	service.Register(web)
+		// 注册结构类		
+		service.Register(web)
+		
+		// 添加路由 ...
+		service.Router("/hello", web.Hello)
 	
-	// 添加路由 ...
-	service.Router("/hello", web.Hello)
-
-	// 启动服务器
-	service.Start(":8080")
+		// 启动服务器
+		service.Start(":8080")
+	
+	}
 
 ----------------
 
